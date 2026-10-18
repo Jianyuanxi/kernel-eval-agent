@@ -1,0 +1,43 @@
+{
+  "status": "passed",
+  "duration_s": 6.4,
+  "toolchain_rewritten": [
+    "src/CMakeLists.txt"
+  ],
+  "warnings": 2,
+  "errors": 0,
+  "diagnostics": [
+    {
+      "evidence_id": "B1",
+      "severity": "warning",
+      "path": "src/kernel/sched/prt_sched_single.c",
+      "line": 37,
+      "column": 13,
+      "message": "implicit declaration of function 'OsMainSchedule'; did you mean 'OsTskSchedule'? [-Wimplicit-function-declaration]",
+      "in_project": true
+    },
+    {
+      "evidence_id": "B2",
+      "severity": "warning",
+      "path": "src/kernel/sched/prt_sched_single.c",
+      "line": 49,
+      "column": 21,
+      "message": "conflicting types for 'OsMainSchedule'; have 'void(void)'",
+      "in_project": true
+    },
+    {
+      "evidence_id": "B3",
+      "severity": "warning",
+      "path": "",
+      "line": null,
+      "column": null,
+      "message": "ld: miniEuler has a LOAD segment with RWX permissions",
+      "in_project": false
+    }
+  ],
+  "artifact": "build/miniEuler",
+  "has_compile_commands": true,
+  "log_tail": "er identification is GNU 13.3.1\n-- The ASM compiler identification is GNU\n-- Found assembler: /opt/toolchain/bin/aarch64-none-elf-gcc\n-- Detecting C compiler ABI info\n-- Detecting C compiler ABI info - done\n-- Check for working C compiler: /opt/toolchain/bin/aarch64-none-elf-gcc - skipped\n-- Detecting C compile features\n-- Detecting C compile features - done\n-- Configuring done (0.2s)\n-- Generating done (0.0s)\n-- Build files have been written to: /workspace/build\n[ 10%] Building ASM object bsp/CMakeFiles/bsp.dir/start.S.obj\n[ 10%] Building C object shell/CMakeFiles/shell.dir/shmsg.c.obj\n[ 15%] Building ASM object bsp/CMakeFiles/bsp.dir/prt_reset_vector.S.obj\n[ 20%] Building C object bsp/CMakeFiles/bsp.dir/print.c.obj\n[ 20%] Built target shell\n[ 25%] Building C object kernel/tick/CMakeFiles/tick.dir/prt_tick.c.obj\n[ 30%] Building C object bsp/CMakeFiles/bsp.dir/vsnprintf_s.c.obj\n[ 30%] Built target tick\n[ 35%] Building C object kernel/task/CMakeFiles/task.dir/prt_sys.c.obj\n[ 40%] Building C object kernel/task/CMakeFiles/task.dir/prt_task_init.c.obj\n[ 45%] Building C object bsp/CMakeFiles/bsp.dir/prt_exc.c.obj\n[ 50%] Building C object kernel/task/CMakeFiles/task.dir/prt_task.c.obj\n[ 55%] Building ASM object bsp/CMakeFiles/bsp.dir/prt_vector.S.obj\n[ 60%] Building C object bsp/CMakeFiles/bsp.dir/hwi_init.c.obj\n[ 60%] Built target task\n[ 65%] Building C object kernel/sched/CMakeFiles/sched.dir/prt_sched_single.c.obj\n[ 70%] Building C object bsp/CMakeFiles/bsp.dir/timer.c.obj\n[ 75%] Building C object bsp/CMakeFiles/bsp.dir/mmu.c.obj\n[ 75%] Built target sched\n[ 80%] Building C object kernel/sem/CMakeFiles/sem.dir/prt_sem_init.c.obj\n[ 85%] Building C object kernel/sem/CMakeFiles/sem.dir/prt_sem.c.obj\n[ 90%] Building ASM object bsp/CMakeFiles/bsp.dir/cache_asm.S.obj\n[ 90%] Built target bsp\n[ 90%] Built target sem\n[ 95%] Building C object CMakeFiles/miniEuler.dir/main.c.obj\n[100%] Linking C executable miniEuler\n[100%] Built target miniEuler\n/workspace/src/kernel/sched/prt_sched_single.c: In function 'OsTskSchedule':\n/workspace/src/kernel/sched/prt_sched_single.c:37:13: warning: implicit declaration of function 'OsMainSchedule'; did you mean 'OsTskSchedule'? [-Wimplicit-function-declaration]\n   37 |             OsMainSchedule();\n      |             ^~~~~~~~~~~~~~\n      |             OsTskSchedule\n/workspace/src/kernel/sched/prt_sched_single.c: At top level:\n/workspace/src/kernel/sched/prt_sched_single.c:49:21: warning: conflicting types for 'OsMainSchedule'; have 'void(void)'\n   49 | OS_SEC_L0_TEXT void OsMainSchedule(void)\n      |                     ^~~~~~~~~~~~~~\n/workspace/src/kernel/sched/prt_sched_single.c:37:13: note: previous implicit declaration of 'OsMainSchedule' with type 'void(void)'\n   37 |             OsMainSchedule();\n      |             ^~~~~~~~~~~~~~\n/opt/arm-gnu-toolchain-13.3.rel1-x86_64-aarch64-none-elf/bin/../lib/gcc/aarch64-none-elf/13.3.1/../../../../aarch64-none-elf/bin/ld: warning: miniEuler has a LOAD segment with RWX permissions\n",
+  "log_file": "logs/p1/build.log",
+  "error": null
+}

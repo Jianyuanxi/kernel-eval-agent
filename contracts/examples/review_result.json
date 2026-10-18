@@ -1,0 +1,213 @@
+{
+  "summary": "工程能编译并在 QEMU 中正常启动，串口、异常、时钟中断、任务、信号量和 shell 都已实现；创新点 mem 命令能显示任务运行时间和栈内存池使用情况，运行输出与说明一致。主要问题集中在 shell：命令缓冲区没有长度检查，遍历就绪队列时没有关中断保护。调度部分有一处隐式函数声明，建议补上声明。",
+  "features": [
+    {
+      "feature_id": "F_UART",
+      "status": "done",
+      "reason": "启动后串口输出了 logo 和提示信息",
+      "locations": [
+        {
+          "path": "src/bsp/print.c",
+          "line": 166
+        }
+      ],
+      "evidence_ids": [
+        "R1"
+      ]
+    },
+    {
+      "feature_id": "F_EXC",
+      "status": "done",
+      "reason": "实现了同步异常和中断的入口与分发",
+      "locations": [
+        {
+          "path": "src/bsp/prt_exc.c",
+          "line": 9
+        }
+      ],
+      "evidence_ids": []
+    },
+    {
+      "feature_id": "F_TIMER",
+      "status": "done",
+      "reason": "tick 命令显示的节拍数持续增长，说明时钟中断在工作",
+      "locations": [
+        {
+          "path": "src/kernel/tick/prt_tick.c",
+          "line": 14
+        }
+      ],
+      "evidence_ids": [
+        "R3"
+      ]
+    },
+    {
+      "feature_id": "F_TASK",
+      "status": "done",
+      "reason": "能创建任务并切换，top 显示 2 个任务",
+      "locations": [
+        {
+          "path": "src/kernel/task/prt_task_init.c",
+          "line": 285
+        }
+      ],
+      "evidence_ids": [
+        "R2"
+      ]
+    },
+    {
+      "feature_id": "F_SCHED",
+      "status": "partial",
+      "reason": "实现了基于优先级的单核调度，但 OsMainSchedule 在定义前被调用且没有声明",
+      "locations": [
+        {
+          "path": "src/kernel/sched/prt_sched_single.c",
+          "line": 25
+        }
+      ],
+      "evidence_ids": [
+        "B1"
+      ]
+    },
+    {
+      "feature_id": "F_SEM",
+      "status": "done",
+      "reason": "实现了信号量的创建、等待和释放，shell 用信号量等待串口输入",
+      "locations": [
+        {
+          "path": "src/kernel/sem/prt_sem.c",
+          "line": 106
+        }
+      ],
+      "evidence_ids": []
+    },
+    {
+      "feature_id": "F_SHELL",
+      "status": "done",
+      "reason": "shell 能响应 top、tick、mem 三条命令",
+      "locations": [
+        {
+          "path": "src/shell/shmsg.c",
+          "line": 75
+        }
+      ],
+      "evidence_ids": [
+        "R2",
+        "R3",
+        "R4"
+      ]
+    },
+    {
+      "feature_id": "F_INNOV",
+      "status": "done",
+      "reason": "新增 mem 命令，统计任务运行时间和栈内存池使用率，运行结果正确",
+      "locations": [
+        {
+          "path": "src/shell/shmsg.c",
+          "line": 21
+        }
+      ],
+      "evidence_ids": [
+        "R4",
+        "D35"
+      ]
+    }
+  ],
+  "defects": [
+    {
+      "type": "OUT_OF_BOUNDS",
+      "path": "src/shell/shmsg.c",
+      "line": 96,
+      "title": "shell 命令缓冲区没有长度检查",
+      "description": "读取串口字符时 idx 一直自增，只有遇到回车才停止。输入超过 SHELL_SHOW_MAX_LEN 个字符就会写出 cmd 数组，破坏栈上的其他数据。",
+      "source": "llm",
+      "evidence_ids": [
+        "S2"
+      ],
+      "knowledge": "内核栈没有用户态那样的保护页，越界写会直接覆盖相邻变量甚至返回地址，导致内核崩溃。这属于地址空间与内存保护问题：内核代码必须自己检查每一次数组访问的边界。",
+      "suggestion": "写入前检查 idx，缓冲区满了就丢弃后续字符或直接执行命令。",
+      "before": "cmd[idx] = ch;\nidx++;",
+      "after": "if (idx < SHELL_SHOW_MAX_LEN - 1) {\n    cmd[idx++] = ch;\n}"
+    },
+    {
+      "type": "RACE",
+      "path": "src/shell/shmsg.c",
+      "line": 33,
+      "title": "遍历就绪队列时没有关中断",
+      "description": "mem 命令在普通任务里遍历 g_runQueue，期间时钟中断可能触发调度、修改队列，遍历可能访问到已经移走的节点。",
+      "source": "llm",
+      "evidence_ids": [
+        "S1"
+      ],
+      "knowledge": "就绪队列是调度器和普通任务共享的数据，读写它的代码段就是临界区。单核系统里保护临界区最简单的办法是先关中断，访问完再恢复，避免竞态条件。",
+      "suggestion": "遍历前调用 PRT_HwiLock() 保存中断状态，遍历结束后 PRT_HwiRestore() 恢复；打印放到临界区外面。",
+      "before": "LIST_FOR_EACH(taskCb, &g_runQueue, struct TagTskCb, pendList) {",
+      "after": "uintptr_t intSave = PRT_HwiLock();\nLIST_FOR_EACH(taskCb, &g_runQueue, struct TagTskCb, pendList) {\n    /* 只拷贝要显示的字段 */\n}\nPRT_HwiRestore(intSave);"
+    },
+    {
+      "type": "OTHER_NORMAL",
+      "path": "src/kernel/sched/prt_sched_single.c",
+      "line": 37,
+      "title": "函数在声明前被调用",
+      "description": "OsMainSchedule 在第 49 行才定义，第 37 行调用时编译器只能按隐式声明处理，返回类型和参数都可能被推断错。",
+      "source": "gcc+llm",
+      "evidence_ids": [
+        "B1",
+        "B2"
+      ],
+      "knowledge": "C99 之后不允许隐式函数声明。调度相关函数被错误推断类型时，调用约定可能不一致，上下文切换会出现难查的错误。",
+      "suggestion": "在文件开头或头文件里加上 void OsMainSchedule(void); 声明。",
+      "before": "",
+      "after": "void OsMainSchedule(void);"
+    },
+    {
+      "type": "UNUSED",
+      "path": "src/main.c",
+      "line": 57,
+      "title": "返回值赋给 ret 后没有使用",
+      "description": "ret 接收了初始化函数的返回值，但之后没有检查。",
+      "source": "clang+llm",
+      "evidence_ids": [
+        "C7"
+      ],
+      "knowledge": "初始化函数的返回值反映硬件或资源是否就绪，忽略它会让后续错误更难定位。",
+      "suggestion": "检查 ret，失败时打印错误并停止启动。",
+      "before": "",
+      "after": ""
+    },
+    {
+      "type": "NULL_DEREF",
+      "path": "src/bsp/vsnprintf_s.c",
+      "line": 347,
+      "title": "格式化函数可能解引用空指针",
+      "description": "clang 认为 str 在某条路径上为空仍被写入。该文件与参考代码完全相同，不是本次提交引入的。",
+      "source": "clang",
+      "evidence_ids": [
+        "C1"
+      ],
+      "knowledge": "空指针解引用在裸机内核里会触发同步异常。调用方传参前应保证缓冲区有效。",
+      "suggestion": "在函数入口检查 str 是否为空。",
+      "before": "",
+      "after": ""
+    }
+  ],
+  "style": {
+    "grade": "medium",
+    "reason": "新增代码有注释，函数划分清楚；但缓冲区长度、打印格式等处使用了魔法数字，部分函数缺少说明。"
+  },
+  "innovation": {
+    "claimed": "实现 mem 命令：显示系统内存使用情况和任务运行时间统计",
+    "found_in_code": true,
+    "comment": "代码里确有 OsDisplayMemAndRuntimeInfo，并在任务切换时累计运行时间；运行输出与说明一致。",
+    "locations": [
+      {
+        "path": "src/shell/shmsg.c",
+        "line": 21
+      },
+      {
+        "path": "src/kernel/task/prt_task.c",
+        "line": 80
+      }
+    ]
+  }
+}

@@ -1,0 +1,306 @@
+{
+  "project_id": "p1",
+  "total": 50,
+  "files": [
+    {
+      "path": "makeMiniEuler.sh",
+      "size": 180,
+      "lines": 10,
+      "lang": "shell"
+    },
+    {
+      "path": "runMiniEuler.sh",
+      "size": 368,
+      "lines": 6,
+      "lang": "shell"
+    },
+    {
+      "path": "src/CMakeLists.txt",
+      "size": 2634,
+      "lines": 39,
+      "lang": "cmake"
+    },
+    {
+      "path": "src/aarch64-qemu.ld",
+      "size": 2466,
+      "lines": 121,
+      "lang": "ld"
+    },
+    {
+      "path": "src/bsp/CMakeLists.txt",
+      "size": 295,
+      "lines": 2,
+      "lang": "cmake"
+    },
+    {
+      "path": "src/bsp/cache_asm.S",
+      "size": 2167,
+      "lines": 101,
+      "lang": "asm"
+    },
+    {
+      "path": "src/bsp/hwi_init.c",
+      "size": 6872,
+      "lines": 167,
+      "lang": "c"
+    },
+    {
+      "path": "src/bsp/mmu.c",
+      "size": 10903,
+      "lines": 358,
+      "lang": "c"
+    },
+    {
+      "path": "src/bsp/mmu.h",
+      "size": 6901,
+      "lines": 206,
+      "lang": "h"
+    },
+    {
+      "path": "src/bsp/os_attr_armv8_external.h",
+      "size": 2127,
+      "lines": 70,
+      "lang": "h"
+    },
+    {
+      "path": "src/bsp/os_cpu_armv8_external.h",
+      "size": 766,
+      "lines": 27,
+      "lang": "h"
+    },
+    {
+      "path": "src/bsp/os_exc_armv8.h",
+      "size": 402,
+      "lines": 18,
+      "lang": "h"
+    },
+    {
+      "path": "src/bsp/print.c",
+      "size": 5879,
+      "lines": 201,
+      "lang": "c"
+    },
+    {
+      "path": "src/bsp/prt_exc.c",
+      "size": 3665,
+      "lines": 136,
+      "lang": "c"
+    },
+    {
+      "path": "src/bsp/prt_reset_vector.S",
+      "size": 481,
+      "lines": 18,
+      "lang": "asm"
+    },
+    {
+      "path": "src/bsp/prt_vector.S",
+      "size": 7523,
+      "lines": 250,
+      "lang": "asm"
+    },
+    {
+      "path": "src/bsp/start.S",
+      "size": 970,
+      "lines": 39,
+      "lang": "asm"
+    },
+    {
+      "path": "src/bsp/timer.c",
+      "size": 1162,
+      "lines": 32,
+      "lang": "c"
+    },
+    {
+      "path": "src/bsp/vsnprintf_s.c",
+      "size": 14190,
+      "lines": 615,
+      "lang": "c"
+    },
+    {
+      "path": "src/include/list_types.h",
+      "size": 175,
+      "lines": 9,
+      "lang": "h"
+    },
+    {
+      "path": "src/include/os_cpu_armv8.h",
+      "size": 1450,
+      "lines": 65,
+      "lang": "h"
+    },
+    {
+      "path": "src/include/prt_amp_task_internal.h",
+      "size": 958,
+      "lines": 32,
+      "lang": "h"
+    },
+    {
+      "path": "src/include/prt_asm_cpu_external.h",
+      "size": 1341,
+      "lines": 35,
+      "lang": "h"
+    },
+    {
+      "path": "src/include/prt_config.h",
+      "size": 179,
+      "lines": 3,
+      "lang": "h"
+    },
+    {
+      "path": "src/include/prt_errno.h",
+      "size": 2387,
+      "lines": 97,
+      "lang": "h"
+    },
+    {
+      "path": "src/include/prt_list_external.h",
+      "size": 2982,
+      "lines": 81,
+      "lang": "h"
+    },
+    {
+      "path": "src/include/prt_module.h",
+      "size": 1430,
+      "lines": 52,
+      "lang": "h"
+    },
+    {
+      "path": "src/include/prt_sem.h",
+      "size": 13828,
+      "lines": 414,
+      "lang": "h"
+    },
+    {
+      "path": "src/include/prt_sem_external.h",
+      "size": 2303,
+      "lines": 69,
+      "lang": "h"
+    },
+    {
+      "path": "src/include/prt_shell.h",
+      "size": 558,
+      "lines": 23,
+      "lang": "h"
+    },
+    {
+      "path": "src/include/prt_task.h",
+      "size": 30157,
+      "lines": 1032,
+      "lang": "h"
+    },
+    {
+      "path": "src/include/prt_task_external.h",
+      "size": 8446,
+      "lines": 229,
+      "lang": "h"
+    },
+    {
+      "path": "src/include/prt_tick.h",
+      "size": 131,
+      "lines": 8,
+      "lang": "h"
+    },
+    {
+      "path": "src/include/prt_typedef.h",
+      "size": 2789,
+      "lines": 137,
+      "lang": "h"
+    },
+    {
+      "path": "src/kernel/CMakeLists.txt",
+      "size": 94,
+      "lines": 4,
+      "lang": "cmake"
+    },
+    {
+      "path": "src/kernel/sched/CMakeLists.txt",
+      "size": 137,
+      "lines": 2,
+      "lang": "cmake"
+    },
+    {
+      "path": "src/kernel/sched/prt_sched_single.c",
+      "size": 3376,
+      "lines": 110,
+      "lang": "c"
+    },
+    {
+      "path": "src/kernel/sem/CMakeLists.txt",
+      "size": 142,
+      "lines": 2,
+      "lang": "cmake"
+    },
+    {
+      "path": "src/kernel/sem/prt_sem.c",
+      "size": 6384,
+      "lines": 221,
+      "lang": "c"
+    },
+    {
+      "path": "src/kernel/sem/prt_sem_init.c",
+      "size": 2950,
+      "lines": 105,
+      "lang": "c"
+    },
+    {
+      "path": "src/kernel/task/CMakeLists.txt",
+      "size": 154,
+      "lines": 2,
+      "lang": "cmake"
+    },
+    {
+      "path": "src/kernel/task/prt_sys.c",
+      "size": 694,
+      "lines": 25,
+      "lang": "c"
+    },
+    {
+      "path": "src/kernel/task/prt_task.c",
+      "size": 2233,
+      "lines": 88,
+      "lang": "c"
+    },
+    {
+      "path": "src/kernel/task/prt_task_init.c",
+      "size": 14010,
+      "lines": 478,
+      "lang": "c"
+    },
+    {
+      "path": "src/kernel/tick/CMakeLists.txt",
+      "size": 128,
+      "lines": 2,
+      "lang": "cmake"
+    },
+    {
+      "path": "src/kernel/tick/prt_tick.c",
+      "size": 980,
+      "lines": 39,
+      "lang": "c"
+    },
+    {
+      "path": "src/main.c",
+      "size": 2147,
+      "lines": 64,
+      "lang": "c"
+    },
+    {
+      "path": "src/shell/CMakeLists.txt",
+      "size": 124,
+      "lines": 2,
+      "lang": "cmake"
+    },
+    {
+      "path": "src/shell/shmsg.c",
+      "size": 4898,
+      "lines": 142,
+      "lang": "c"
+    },
+    {
+      "path": "创新功能实现.md",
+      "size": 15393,
+      "lines": 395,
+      "lang": "markdown"
+    }
+  ]
+}

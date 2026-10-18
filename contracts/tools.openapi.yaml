@@ -1,0 +1,94 @@
+# 智能体工具的接口描述，导入 Dify「工具 → 自定义工具」用。与 backend/app/core/tools_api.py 一一对应。
+# - 鉴权：在 Dify 里选「API Key → 请求头」，头名 X-Tool-Token，值为服务器 backend/.env 里的 KE_TOOL_TOKEN
+# - servers.url：Dify 调我们后端的地址，第 1 周由块 1 定（公网 IP 经 nginx，或改 SSRF 白名单走内网），定了改这里并重新导入
+# - operationId 就是工具名，后端用它判断“必调工具有没有调”，不能改
+openapi: 3.1.0
+info:
+  title: kernel-eval-tools
+  description: 内核代码评测智能体的工具：取编译/运行/扫描/对比结果，读源码
+  version: 0.1.0
+servers:
+  - url: http://132.232.242.186
+paths:
+  /tools/list_files:
+    post:
+      operationId: list_files
+      summary: 列出工程里的所有文件（路径、行数、类型），评审第一步调用
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: "#/components/schemas/ProjectRef"}
+      responses:
+        "200": {description: 文件列表，或 {"error":{...}}}
+  /tools/read_source:
+    post:
+      operationId: read_source
+      summary: 读取一个文件的一段源码（带行号，每次最多 200 行），返回证据编号 S1、S2…
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [task_id, project_id, path]
+              properties:
+                task_id: {type: string, description: 任务编号}
+                project_id: {type: string, description: 工程编号，如 p1}
+                path: {type: string, description: 相对工程根的文件路径，如 src/main.c}
+                start_line: {type: integer, description: 起始行，默认 1}
+                end_line: {type: integer, description: 结束行，默认 200}
+      responses:
+        "200": {description: 源码片段，或 {"error":{...}}}
+  /tools/compile_project:
+    post:
+      operationId: compile_project
+      summary: 获取在沙箱里交叉编译的结果：是否通过、警告和错误（证据编号 B1、B2…）
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: "#/components/schemas/ProjectRef"}
+      responses:
+        "200": {description: 编译结果，或 {"error":{...}}}
+  /tools/run_kernel:
+    post:
+      operationId: run_kernel
+      summary: 获取在 QEMU 中运行内核的结果：启动输出（R1）和 shell 命令输出（R2、R3…）
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: "#/components/schemas/ProjectRef"}
+      responses:
+        "200": {description: 运行结果，或 {"error":{...}}}
+  /tools/clang_scan:
+    post:
+      operationId: clang_scan
+      summary: 获取 clang 静态分析的告警列表（证据编号 C1、C2…）
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: "#/components/schemas/ProjectRef"}
+      responses:
+        "200": {description: 扫描结果，或 {"error":{...}}}
+  /tools/diff_reference:
+    post:
+      operationId: diff_reference
+      summary: 和参考实验代码对比，列出学生修改和新增的文件及改动行（证据编号 D1、D2…）
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: "#/components/schemas/ProjectRef"}
+      responses:
+        "200": {description: 对比结果，或 {"error":{...}}}
+components:
+  schemas:
+    ProjectRef:
+      type: object
+      required: [task_id, project_id]
+      properties:
+        task_id: {type: string, description: 任务编号，用户消息里给出}
+        project_id: {type: string, description: 工程编号，如 p1}

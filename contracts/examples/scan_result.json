@@ -1,0 +1,97 @@
+{
+  "status": "passed",
+  "mode": "full",
+  "target": "aarch64-none-elf",
+  "files_total": 15,
+  "files_scanned": 14,
+  "files_failed": [
+    {
+      "path": "src/kernel/sched/prt_sched_single.c",
+      "reason": "error: conflicting types for 'OsMainSchedule'"
+    }
+  ],
+  "coverage": 0.93,
+  "findings_total": 7,
+  "findings": [
+    {
+      "evidence_id": "C1",
+      "checker": "core.NullDereference",
+      "path": "src/bsp/vsnprintf_s.c",
+      "line": 347,
+      "column": null,
+      "message": "Dereference of null pointer (loaded from variable 'str')",
+      "defect_type": "NULL_DEREF",
+      "severity": "严重",
+      "in_baseline_unchanged": true
+    },
+    {
+      "evidence_id": "C2",
+      "checker": "core.NullDereference",
+      "path": "src/bsp/vsnprintf_s.c",
+      "line": 438,
+      "column": null,
+      "message": "Dereference of null pointer (loaded from variable 'str')",
+      "defect_type": "NULL_DEREF",
+      "severity": "严重",
+      "in_baseline_unchanged": true
+    },
+    {
+      "evidence_id": "C3",
+      "checker": "core.NullDereference",
+      "path": "src/bsp/vsnprintf_s.c",
+      "line": 447,
+      "column": null,
+      "message": "Dereference of null pointer (loaded from variable 'str')",
+      "defect_type": "NULL_DEREF",
+      "severity": "严重",
+      "in_baseline_unchanged": true
+    },
+    {
+      "evidence_id": "C4",
+      "checker": "core.NullDereference",
+      "path": "src/bsp/vsnprintf_s.c",
+      "line": 454,
+      "column": null,
+      "message": "Dereference of null pointer (loaded from variable 'str')",
+      "defect_type": "NULL_DEREF",
+      "severity": "严重",
+      "in_baseline_unchanged": true
+    },
+    {
+      "evidence_id": "C5",
+      "checker": "core.NullDereference",
+      "path": "src/bsp/vsnprintf_s.c",
+      "line": 557,
+      "column": null,
+      "message": "Dereference of null pointer (loaded from variable 'str')",
+      "defect_type": "NULL_DEREF",
+      "severity": "严重",
+      "in_baseline_unchanged": true
+    },
+    {
+      "evidence_id": "C6",
+      "checker": "core.NullDereference",
+      "path": "src/bsp/vsnprintf_s.c",
+      "line": 603,
+      "column": null,
+      "message": "Dereference of null pointer (loaded from variable 'str')",
+      "defect_type": "NULL_DEREF",
+      "severity": "严重",
+      "in_baseline_unchanged": true
+    },
+    {
+      "evidence_id": "C7",
+      "checker": "deadcode.DeadStores",
+      "path": "src/main.c",
+      "line": 57,
+      "column": null,
+      "message": "Value stored to 'ret' is never read",
+      "defect_type": "UNUSED",
+      "severity": "轻微",
+      "in_baseline_unchanged": false
+    }
+  ],
+  "duration_s": 12.8,
+  "log_file": "logs/p1/scan.log",
+  "error": null
+}

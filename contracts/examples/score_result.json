@@ -1,0 +1,74 @@
+{
+  "mode": "full",
+  "items": [
+    {
+      "key": "compile_run",
+      "name": "编译与运行",
+      "max": 20.0,
+      "score": 19.0,
+      "reasons": [
+        "编译通过，2 条警告扣 1 分",
+        "QEMU 中正常启动"
+      ]
+    },
+    {
+      "key": "features",
+      "name": "功能完成度",
+      "max": 40.0,
+      "score": 37.5,
+      "reasons": [
+        "完成 7 项，部分完成 1 项（任务调度）"
+      ]
+    },
+    {
+      "key": "reliability",
+      "name": "代码可靠性",
+      "max": 25.0,
+      "score": 12.0,
+      "reasons": [
+        "严重 2 个扣 10 分",
+        "一般 1 个扣 2 分",
+        "轻微 1 个扣 1 分",
+        "参考代码原有的 1 个问题不扣分"
+      ]
+    },
+    {
+      "key": "style",
+      "name": "规范与可读性",
+      "max": 15.0,
+      "score": 10.0,
+      "reasons": [
+        "中：新增代码有注释，函数划分清楚；但缓冲区长度、打印格式等处使用了魔法数字，部分函数缺少说明。"
+      ]
+    }
+  ],
+  "raw_total": 78.5,
+  "total": 79,
+  "grade": "中等",
+  "deductions": [
+    {
+      "defect_index": 0,
+      "type": "OUT_OF_BOUNDS",
+      "severity": "严重",
+      "points": 5
+    },
+    {
+      "defect_index": 1,
+      "type": "RACE",
+      "severity": "严重",
+      "points": 5
+    },
+    {
+      "defect_index": 2,
+      "type": "OTHER_NORMAL",
+      "severity": "一般",
+      "points": 2
+    },
+    {
+      "defect_index": 3,
+      "type": "UNUSED",
+      "severity": "轻微",
+      "points": 1
+    }
+  ]
+}

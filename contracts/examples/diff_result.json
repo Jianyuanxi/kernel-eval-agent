@@ -1,0 +1,1014 @@
+{
+  "status": "passed",
+  "ref_repo": "https://gitee.com/leeboby/os2024_exp_redo_kp",
+  "ref_commit": "0bd1ef59f32867842f0c3047a58d62bced82d54b",
+  "baseline": "lab10",
+  "candidates": {
+    "lab1": 7,
+    "lab2": 9,
+    "lab4": 11,
+    "lab5": 19,
+    "lab6": 32,
+    "lab7": 37,
+    "lab8": 39,
+    "lab10": 40
+  },
+  "same": 14,
+  "modified": 26,
+  "added": 10,
+  "files": [
+    {
+      "evidence_id": "D1",
+      "path": "makeMiniEuler.sh",
+      "change": "modified",
+      "added_lines": 4,
+      "removed_lines": 1,
+      "hunks": [
+        {
+          "start": 1,
+          "end": 2
+        },
+        {
+          "start": 5,
+          "end": 6
+        }
+      ]
+    },
+    {
+      "evidence_id": "D2",
+      "path": "runMiniEuler.sh",
+      "change": "added",
+      "added_lines": 6,
+      "removed_lines": 0,
+      "hunks": [
+        {
+          "start": 1,
+          "end": 6
+        }
+      ]
+    },
+    {
+      "evidence_id": "D3",
+      "path": "src/CMakeLists.txt",
+      "change": "modified",
+      "added_lines": 6,
+      "removed_lines": 15,
+      "hunks": [
+        {
+          "start": 6,
+          "end": 6
+        },
+        {
+          "start": 18,
+          "end": 19
+        },
+        {
+          "start": 25,
+          "end": 25
+        },
+        {
+          "start": 36,
+          "end": 36
+        },
+        {
+          "start": 38,
+          "end": 38
+        }
+      ]
+    },
+    {
+      "evidence_id": "D4",
+      "path": "src/aarch64-qemu.ld",
+      "change": "added",
+      "added_lines": 121,
+      "removed_lines": 0,
+      "hunks": [
+        {
+          "start": 1,
+          "end": 121
+        }
+      ]
+    },
+    {
+      "evidence_id": "D5",
+      "path": "src/bsp/CMakeLists.txt",
+      "change": "modified",
+      "added_lines": 1,
+      "removed_lines": 1,
+      "hunks": [
+        {
+          "start": 1,
+          "end": 1
+        }
+      ]
+    },
+    {
+      "evidence_id": "D6",
+      "path": "src/bsp/cache_asm.S",
+      "change": "modified",
+      "added_lines": 12,
+      "removed_lines": 0,
+      "hunks": [
+        {
+          "start": 2,
+          "end": 3
+        },
+        {
+          "start": 80,
+          "end": 89
+        }
+      ]
+    },
+    {
+      "evidence_id": "D7",
+      "path": "src/bsp/hwi_init.c",
+      "change": "modified",
+      "added_lines": 129,
+      "removed_lines": 258,
+      "hunks": [
+        {
+          "start": 1,
+          "end": 2
+        },
+        {
+          "start": 4,
+          "end": 4
+        },
+        {
+          "start": 6,
+          "end": 7
+        },
+        {
+          "start": 9,
+          "end": 20
+        },
+        {
+          "start": 23,
+          "end": 31
+        },
+        {
+          "start": 33,
+          "end": 39
+        },
+        {
+          "start": 41,
+          "end": 71
+        },
+        {
+          "start": 73,
+          "end": 78
+        },
+        {
+          "start": 81,
+          "end": 83
+        },
+        {
+          "start": 87,
+          "end": 91
+        },
+        {
+          "start": 93,
+          "end": 98
+        },
+        {
+          "start": 101,
+          "end": 104
+        },
+        {
+          "start": 106,
+          "end": 111
+        },
+        {
+          "start": 114,
+          "end": 114
+        },
+        {
+          "start": 116,
+          "end": 116
+        },
+        {
+          "start": 119,
+          "end": 126
+        },
+        {
+          "start": 129,
+          "end": 136
+        },
+        {
+          "start": 139,
+          "end": 142
+        },
+        {
+          "start": 144,
+          "end": 147
+        },
+        {
+          "start": 150,
+          "end": 153
+        },
+        {
+          "start": 155,
+          "end": 158
+        },
+        {
+          "start": 164,
+          "end": 164
+        }
+      ]
+    },
+    {
+      "evidence_id": "D8",
+      "path": "src/bsp/mmu.c",
+      "change": "modified",
+      "added_lines": 52,
+      "removed_lines": 22,
+      "hunks": [
+        {
+          "start": 10,
+          "end": 13
+        },
+        {
+          "start": 16,
+          "end": 20
+        },
+        {
+          "start": 22,
+          "end": 26
+        },
+        {
+          "start": 32,
+          "end": 32
+        },
+        {
+          "start": 41,
+          "end": 41
+        },
+        {
+          "start": 46,
+          "end": 47
+        },
+        {
+          "start": 68,
+          "end": 68
+        },
+        {
+          "start": 77,
+          "end": 77
+        },
+        {
+          "start": 95,
+          "end": 95
+        },
+        {
+          "start": 105,
+          "end": 105
+        },
+        {
+          "start": 118,
+          "end": 118
+        },
+        {
+          "start": 120,
+          "end": 120
+        },
+        {
+          "start": 127,
+          "end": 127
+        },
+        {
+          "start": 130,
+          "end": 130
+        },
+        {
+          "start": 135,
+          "end": 136
+        },
+        {
+          "start": 141,
+          "end": 141
+        },
+        {
+          "start": 152,
+          "end": 152
+        },
+        {
+          "start": 164,
+          "end": 164
+        },
+        {
+          "start": 171,
+          "end": 171
+        },
+        {
+          "start": 184,
+          "end": 184
+        },
+        {
+          "start": 188,
+          "end": 188
+        },
+        {
+          "start": 193,
+          "end": 193
+        },
+        {
+          "start": 195,
+          "end": 195
+        },
+        {
+          "start": 197,
+          "end": 197
+        },
+        {
+          "start": 202,
+          "end": 202
+        },
+        {
+          "start": 204,
+          "end": 205
+        },
+        {
+          "start": 208,
+          "end": 208
+        },
+        {
+          "start": 215,
+          "end": 215
+        },
+        {
+          "start": 233,
+          "end": 233
+        },
+        {
+          "start": 235,
+          "end": 235
+        },
+        {
+          "start": 241,
+          "end": 242
+        },
+        {
+          "start": 266,
+          "end": 266
+        },
+        {
+          "start": 288,
+          "end": 288
+        },
+        {
+          "start": 304,
+          "end": 304
+        },
+        {
+          "start": 332,
+          "end": 332
+        },
+        {
+          "start": 339,
+          "end": 340
+        }
+      ]
+    },
+    {
+      "evidence_id": "D9",
+      "path": "src/bsp/mmu.h",
+      "change": "added",
+      "added_lines": 206,
+      "removed_lines": 0,
+      "hunks": [
+        {
+          "start": 1,
+          "end": 206
+        }
+      ]
+    },
+    {
+      "evidence_id": "D10",
+      "path": "src/bsp/os_attr_armv8_external.h",
+      "change": "added",
+      "added_lines": 70,
+      "removed_lines": 0,
+      "hunks": [
+        {
+          "start": 1,
+          "end": 70
+        }
+      ]
+    },
+    {
+      "evidence_id": "D11",
+      "path": "src/bsp/os_cpu_armv8_external.h",
+      "change": "added",
+      "added_lines": 27,
+      "removed_lines": 0,
+      "hunks": [
+        {
+          "start": 1,
+          "end": 27
+        }
+      ]
+    },
+    {
+      "evidence_id": "D12",
+      "path": "src/bsp/os_exc_armv8.h",
+      "change": "added",
+      "added_lines": 18,
+      "removed_lines": 0,
+      "hunks": [
+        {
+          "start": 1,
+          "end": 18
+        }
+      ]
+    },
+    {
+      "evidence_id": "D13",
+      "path": "src/bsp/print.c",
+      "change": "modified",
+      "added_lines": 140,
+      "removed_lines": 9,
+      "hunks": [
+        {
+          "start": 3,
+          "end": 4
+        },
+        {
+          "start": 6,
+          "end": 6
+        },
+        {
+          "start": 17,
+          "end": 31
+        },
+        {
+          "start": 36,
+          "end": 36
+        },
+        {
+          "start": 38,
+          "end": 115
+        },
+        {
+          "start": 118,
+          "end": 134
+        },
+        {
+          "start": 150,
+          "end": 150
+        },
+        {
+          "start": 177,
+          "end": 201
+        }
+      ]
+    },
+    {
+      "evidence_id": "D14",
+      "path": "src/bsp/prt_exc.c",
+      "change": "modified",
+      "added_lines": 17,
+      "removed_lines": 18,
+      "hunks": [
+        {
+          "start": 11,
+          "end": 11
+        },
+        {
+          "start": 14,
+          "end": 14
+        },
+        {
+          "start": 23,
+          "end": 23
+        },
+        {
+          "start": 29,
+          "end": 29
+        },
+        {
+          "start": 33,
+          "end": 33
+        },
+        {
+          "start": 40,
+          "end": 40
+        },
+        {
+          "start": 43,
+          "end": 43
+        },
+        {
+          "start": 57,
+          "end": 58
+        },
+        {
+          "start": 73,
+          "end": 77
+        },
+        {
+          "start": 80,
+          "end": 82
+        }
+      ]
+    },
+    {
+      "evidence_id": "D15",
+      "path": "src/bsp/prt_reset_vector.S",
+      "change": "modified",
+      "added_lines": 0,
+      "removed_lines": 2,
+      "hunks": []
+    },
+    {
+      "evidence_id": "D16",
+      "path": "src/bsp/prt_vector.S",
+      "change": "modified",
+      "added_lines": 62,
+      "removed_lines": 65,
+      "hunks": [
+        {
+          "start": 49,
+          "end": 108
+        },
+        {
+          "start": 169,
+          "end": 169
+        },
+        {
+          "start": 196,
+          "end": 196
+        }
+      ]
+    },
+    {
+      "evidence_id": "D17",
+      "path": "src/bsp/start.S",
+      "change": "modified",
+      "added_lines": 9,
+      "removed_lines": 74,
+      "hunks": [
+        {
+          "start": 18,
+          "end": 18
+        },
+        {
+          "start": 24,
+          "end": 24
+        },
+        {
+          "start": 27,
+          "end": 29
+        },
+        {
+          "start": 32,
+          "end": 35
+        }
+      ]
+    },
+    {
+      "evidence_id": "D18",
+      "path": "src/bsp/timer.c",
+      "change": "modified",
+      "added_lines": 9,
+      "removed_lines": 4,
+      "hunks": [
+        {
+          "start": 6,
+          "end": 9
+        },
+        {
+          "start": 13,
+          "end": 17
+        }
+      ]
+    },
+    {
+      "evidence_id": "",
+      "path": "src/bsp/vsnprintf_s.c",
+      "change": "same",
+      "added_lines": 0,
+      "removed_lines": 0,
+      "hunks": []
+    },
+    {
+      "evidence_id": "",
+      "path": "src/include/list_types.h",
+      "change": "same",
+      "added_lines": 0,
+      "removed_lines": 0,
+      "hunks": []
+    },
+    {
+      "evidence_id": "D19",
+      "path": "src/include/os_cpu_armv8.h",
+      "change": "modified",
+      "added_lines": 2,
+      "removed_lines": 46,
+      "hunks": [
+        {
+          "start": 23,
+          "end": 24
+        }
+      ]
+    },
+    {
+      "evidence_id": "",
+      "path": "src/include/prt_amp_task_internal.h",
+      "change": "same",
+      "added_lines": 0,
+      "removed_lines": 0,
+      "hunks": []
+    },
+    {
+      "evidence_id": "",
+      "path": "src/include/prt_asm_cpu_external.h",
+      "change": "same",
+      "added_lines": 0,
+      "removed_lines": 0,
+      "hunks": []
+    },
+    {
+      "evidence_id": "D20",
+      "path": "src/include/prt_config.h",
+      "change": "modified",
+      "added_lines": 0,
+      "removed_lines": 1,
+      "hunks": []
+    },
+    {
+      "evidence_id": "",
+      "path": "src/include/prt_errno.h",
+      "change": "same",
+      "added_lines": 0,
+      "removed_lines": 0,
+      "hunks": []
+    },
+    {
+      "evidence_id": "",
+      "path": "src/include/prt_list_external.h",
+      "change": "same",
+      "added_lines": 0,
+      "removed_lines": 0,
+      "hunks": []
+    },
+    {
+      "evidence_id": "",
+      "path": "src/include/prt_module.h",
+      "change": "same",
+      "added_lines": 0,
+      "removed_lines": 0,
+      "hunks": []
+    },
+    {
+      "evidence_id": "",
+      "path": "src/include/prt_sem.h",
+      "change": "same",
+      "added_lines": 0,
+      "removed_lines": 0,
+      "hunks": []
+    },
+    {
+      "evidence_id": "",
+      "path": "src/include/prt_sem_external.h",
+      "change": "same",
+      "added_lines": 0,
+      "removed_lines": 0,
+      "hunks": []
+    },
+    {
+      "evidence_id": "",
+      "path": "src/include/prt_shell.h",
+      "change": "same",
+      "added_lines": 0,
+      "removed_lines": 0,
+      "hunks": []
+    },
+    {
+      "evidence_id": "D21",
+      "path": "src/include/prt_task.h",
+      "change": "modified",
+      "added_lines": 0,
+      "removed_lines": 385,
+      "hunks": []
+    },
+    {
+      "evidence_id": "D22",
+      "path": "src/include/prt_task_external.h",
+      "change": "modified",
+      "added_lines": 4,
+      "removed_lines": 21,
+      "hunks": [
+        {
+          "start": 84,
+          "end": 87
+        }
+      ]
+    },
+    {
+      "evidence_id": "D23",
+      "path": "src/include/prt_tick.h",
+      "change": "modified",
+      "added_lines": 0,
+      "removed_lines": 15,
+      "hunks": []
+    },
+    {
+      "evidence_id": "D24",
+      "path": "src/include/prt_typedef.h",
+      "change": "modified",
+      "added_lines": 2,
+      "removed_lines": 2,
+      "hunks": [
+        {
+          "start": 13,
+          "end": 13
+        },
+        {
+          "start": 52,
+          "end": 52
+        }
+      ]
+    },
+    {
+      "evidence_id": "D25",
+      "path": "src/kernel/CMakeLists.txt",
+      "change": "modified",
+      "added_lines": 0,
+      "removed_lines": 3,
+      "hunks": []
+    },
+    {
+      "evidence_id": "",
+      "path": "src/kernel/sched/CMakeLists.txt",
+      "change": "same",
+      "added_lines": 0,
+      "removed_lines": 0,
+      "hunks": []
+    },
+    {
+      "evidence_id": "D26",
+      "path": "src/kernel/sched/prt_sched_single.c",
+      "change": "modified",
+      "added_lines": 42,
+      "removed_lines": 10,
+      "hunks": [
+        {
+          "start": 1,
+          "end": 15
+        },
+        {
+          "start": 20,
+          "end": 20
+        },
+        {
+          "start": 37,
+          "end": 37
+        },
+        {
+          "start": 52,
+          "end": 52
+        },
+        {
+          "start": 55,
+          "end": 63
+        },
+        {
+          "start": 70,
+          "end": 72
+        },
+        {
+          "start": 84,
+          "end": 92
+        },
+        {
+          "start": 104,
+          "end": 106
+        }
+      ]
+    },
+    {
+      "evidence_id": "D27",
+      "path": "src/kernel/sem/CMakeLists.txt",
+      "change": "modified",
+      "added_lines": 1,
+      "removed_lines": 1,
+      "hunks": [
+        {
+          "start": 1,
+          "end": 1
+        }
+      ]
+    },
+    {
+      "evidence_id": "",
+      "path": "src/kernel/sem/prt_sem.c",
+      "change": "same",
+      "added_lines": 0,
+      "removed_lines": 0,
+      "hunks": []
+    },
+    {
+      "evidence_id": "",
+      "path": "src/kernel/sem/prt_sem_init.c",
+      "change": "same",
+      "added_lines": 0,
+      "removed_lines": 0,
+      "hunks": []
+    },
+    {
+      "evidence_id": "D28",
+      "path": "src/kernel/task/CMakeLists.txt",
+      "change": "modified",
+      "added_lines": 1,
+      "removed_lines": 1,
+      "hunks": [
+        {
+          "start": 1,
+          "end": 1
+        }
+      ]
+    },
+    {
+      "evidence_id": "D29",
+      "path": "src/kernel/task/prt_sys.c",
+      "change": "added",
+      "added_lines": 25,
+      "removed_lines": 0,
+      "hunks": [
+        {
+          "start": 1,
+          "end": 25
+        }
+      ]
+    },
+    {
+      "evidence_id": "D30",
+      "path": "src/kernel/task/prt_task.c",
+      "change": "modified",
+      "added_lines": 5,
+      "removed_lines": 7,
+      "hunks": [
+        {
+          "start": 74,
+          "end": 74
+        },
+        {
+          "start": 80,
+          "end": 80
+        },
+        {
+          "start": 84,
+          "end": 84
+        },
+        {
+          "start": 86,
+          "end": 87
+        }
+      ]
+    },
+    {
+      "evidence_id": "D31",
+      "path": "src/kernel/task/prt_task_init.c",
+      "change": "modified",
+      "added_lines": 44,
+      "removed_lines": 5,
+      "hunks": [
+        {
+          "start": 10,
+          "end": 10
+        },
+        {
+          "start": 17,
+          "end": 18
+        },
+        {
+          "start": 27,
+          "end": 58
+        },
+        {
+          "start": 86,
+          "end": 86
+        },
+        {
+          "start": 138,
+          "end": 138
+        },
+        {
+          "start": 164,
+          "end": 165
+        },
+        {
+          "start": 290,
+          "end": 290
+        },
+        {
+          "start": 375,
+          "end": 378
+        }
+      ]
+    },
+    {
+      "evidence_id": "",
+      "path": "src/kernel/tick/CMakeLists.txt",
+      "change": "same",
+      "added_lines": 0,
+      "removed_lines": 0,
+      "hunks": []
+    },
+    {
+      "evidence_id": "D32",
+      "path": "src/kernel/tick/prt_tick.c",
+      "change": "modified",
+      "added_lines": 2,
+      "removed_lines": 13,
+      "hunks": [
+        {
+          "start": 35,
+          "end": 35
+        },
+        {
+          "start": 38,
+          "end": 38
+        }
+      ]
+    },
+    {
+      "evidence_id": "D33",
+      "path": "src/main.c",
+      "change": "modified",
+      "added_lines": 25,
+      "removed_lines": 20,
+      "hunks": [
+        {
+          "start": 5,
+          "end": 5
+        },
+        {
+          "start": 12,
+          "end": 14
+        },
+        {
+          "start": 18,
+          "end": 32
+        },
+        {
+          "start": 40,
+          "end": 41
+        },
+        {
+          "start": 54,
+          "end": 54
+        },
+        {
+          "start": 56,
+          "end": 57
+        },
+        {
+          "start": 60,
+          "end": 60
+        }
+      ]
+    },
+    {
+      "evidence_id": "D34",
+      "path": "src/shell/CMakeLists.txt",
+      "change": "added",
+      "added_lines": 2,
+      "removed_lines": 0,
+      "hunks": [
+        {
+          "start": 1,
+          "end": 2
+        }
+      ]
+    },
+    {
+      "evidence_id": "D35",
+      "path": "src/shell/shmsg.c",
+      "change": "added",
+      "added_lines": 142,
+      "removed_lines": 0,
+      "hunks": [
+        {
+          "start": 1,
+          "end": 142
+        }
+      ]
+    },
+    {
+      "evidence_id": "D36",
+      "path": "创新功能实现.md",
+      "change": "added",
+      "added_lines": 395,
+      "removed_lines": 0,
+      "hunks": [
+        {
+          "start": 1,
+          "end": 395
+        }
+      ]
+    }
+  ],
+  "note": "",
+  "error": null
+}

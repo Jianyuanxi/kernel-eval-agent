@@ -1,0 +1,39 @@
+# 测试样例和评测补丁含往届学生代码，绝不进仓库
+samples/
+evaluation/patches/
+*.zip
+*.rar
+
+# 运行数据
+backend/data/
+data/
+
+# 密钥与环境
+.env
+*.env
+!deploy/env.example
+*_ed25519
+*_ed25519.pub
+*.pem
+*.key
+Dify.txt
+
+# Python
+.venv/
+venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# 前端
+node_modules/
+frontend/dist/
+
+# 沙箱构建用的工具链包
+sandbox/*.tar.xz
+
+# 系统与编辑器
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

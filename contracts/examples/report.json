@@ -1,0 +1,1769 @@
+{
+  "task_id": "t20261018163000a1b2c3",
+  "generated_at": "2026-10-18T16:33:10+08:00",
+  "project": {
+    "project_id": "p1",
+    "name": "样例1_完整工程",
+    "root": ".",
+    "kind": "full",
+    "arch": "aarch64",
+    "buildable": true,
+    "file_count": 50,
+    "c_files": 15,
+    "has_run_script": true,
+    "note": ""
+  },
+  "mode": "full",
+  "build": {
+    "status": "passed",
+    "duration_s": 6.4,
+    "toolchain_rewritten": [
+      "src/CMakeLists.txt"
+    ],
+    "warnings": 2,
+    "errors": 0,
+    "diagnostics": [
+      {
+        "evidence_id": "B1",
+        "severity": "warning",
+        "path": "src/kernel/sched/prt_sched_single.c",
+        "line": 37,
+        "column": 13,
+        "message": "implicit declaration of function 'OsMainSchedule'; did you mean 'OsTskSchedule'? [-Wimplicit-function-declaration]",
+        "in_project": true
+      },
+      {
+        "evidence_id": "B2",
+        "severity": "warning",
+        "path": "src/kernel/sched/prt_sched_single.c",
+        "line": 49,
+        "column": 21,
+        "message": "conflicting types for 'OsMainSchedule'; have 'void(void)'",
+        "in_project": true
+      },
+      {
+        "evidence_id": "B3",
+        "severity": "warning",
+        "path": "",
+        "line": null,
+        "column": null,
+        "message": "ld: miniEuler has a LOAD segment with RWX permissions",
+        "in_project": false
+      }
+    ],
+    "artifact": "build/miniEuler",
+    "has_compile_commands": true,
+    "log_tail": "er identification is GNU 13.3.1\n-- The ASM compiler identification is GNU\n-- Found assembler: /opt/toolchain/bin/aarch64-none-elf-gcc\n-- Detecting C compiler ABI info\n-- Detecting C compiler ABI info - done\n-- Check for working C compiler: /opt/toolchain/bin/aarch64-none-elf-gcc - skipped\n-- Detecting C compile features\n-- Detecting C compile features - done\n-- Configuring done (0.2s)\n-- Generating done (0.0s)\n-- Build files have been written to: /workspace/build\n[ 10%] Building ASM object bsp/CMakeFiles/bsp.dir/start.S.obj\n[ 10%] Building C object shell/CMakeFiles/shell.dir/shmsg.c.obj\n[ 15%] Building ASM object bsp/CMakeFiles/bsp.dir/prt_reset_vector.S.obj\n[ 20%] Building C object bsp/CMakeFiles/bsp.dir/print.c.obj\n[ 20%] Built target shell\n[ 25%] Building C object kernel/tick/CMakeFiles/tick.dir/prt_tick.c.obj\n[ 30%] Building C object bsp/CMakeFiles/bsp.dir/vsnprintf_s.c.obj\n[ 30%] Built target tick\n[ 35%] Building C object kernel/task/CMakeFiles/task.dir/prt_sys.c.obj\n[ 40%] Building C object kernel/task/CMakeFiles/task.dir/prt_task_init.c.obj\n[ 45%] Building C object bsp/CMakeFiles/bsp.dir/prt_exc.c.obj\n[ 50%] Building C object kernel/task/CMakeFiles/task.dir/prt_task.c.obj\n[ 55%] Building ASM object bsp/CMakeFiles/bsp.dir/prt_vector.S.obj\n[ 60%] Building C object bsp/CMakeFiles/bsp.dir/hwi_init.c.obj\n[ 60%] Built target task\n[ 65%] Building C object kernel/sched/CMakeFiles/sched.dir/prt_sched_single.c.obj\n[ 70%] Building C object bsp/CMakeFiles/bsp.dir/timer.c.obj\n[ 75%] Building C object bsp/CMakeFiles/bsp.dir/mmu.c.obj\n[ 75%] Built target sched\n[ 80%] Building C object kernel/sem/CMakeFiles/sem.dir/prt_sem_init.c.obj\n[ 85%] Building C object kernel/sem/CMakeFiles/sem.dir/prt_sem.c.obj\n[ 90%] Building ASM object bsp/CMakeFiles/bsp.dir/cache_asm.S.obj\n[ 90%] Built target bsp\n[ 90%] Built target sem\n[ 95%] Building C object CMakeFiles/miniEuler.dir/main.c.obj\n[100%] Linking C executable miniEuler\n[100%] Built target miniEuler\n/workspace/src/kernel/sched/prt_sched_single.c: In function 'OsTskSchedule':\n/workspace/src/kernel/sched/prt_sched_single.c:37:13: warning: implicit declaration of function 'OsMainSchedule'; did you mean 'OsTskSchedule'? [-Wimplicit-function-declaration]\n   37 |             OsMainSchedule();\n      |             ^~~~~~~~~~~~~~\n      |             OsTskSchedule\n/workspace/src/kernel/sched/prt_sched_single.c: At top level:\n/workspace/src/kernel/sched/prt_sched_single.c:49:21: warning: conflicting types for 'OsMainSchedule'; have 'void(void)'\n   49 | OS_SEC_L0_TEXT void OsMainSchedule(void)\n      |                     ^~~~~~~~~~~~~~\n/workspace/src/kernel/sched/prt_sched_single.c:37:13: note: previous implicit declaration of 'OsMainSchedule' with type 'void(void)'\n   37 |             OsMainSchedule();\n      |             ^~~~~~~~~~~~~~\n/opt/arm-gnu-toolchain-13.3.rel1-x86_64-aarch64-none-elf/bin/../lib/gcc/aarch64-none-elf/13.3.1/../../../../aarch64-none-elf/bin/ld: warning: miniEuler has a LOAD segment with RWX permissions\n",
+    "log_file": "logs/p1/build.log",
+    "error": null
+  },
+  "run": {
+    "status": "passed",
+    "booted": true,
+    "gic_version": 2,
+    "tried_gic": [
+      2
+    ],
+    "window_s": 20,
+    "boot_evidence_id": "R1",
+    "boot_output": "            _       _ _____      _             _             _   _ _   _ _   _           \n  _ __ ___ (_)_ __ (_) ____|   _| | ___ _ __  | |__  _   _  | | | | \\ | | | | | ___ _ __ \n | '_ ` _ \\| | '_ \\| |  _|| | | | |/ _ \\ '__| | '_ \\| | | | | |_| |  \\| | | | |/ _ \\ '__|\n | | | | | | | | | | | |__| |_| | |  __/ |    | |_) | |_| | |  _  | |\\  | |_| |  __/ |   \n |_| |_| |_|_|_| |_|_|_____\\__,_|_|\\___|_|    |_.__/ \\__, | |_| |_|_| \\_|\\___/ \\___|_|   \n                                                     |___/                               \nctr-a h: print help of qemu emulator. ctr-a x: quit emulator.\n",
+    "shell_prompt": "miniEuler # ",
+    "commands": [
+      {
+        "evidence_id": "R2",
+        "command": "top",
+        "output": "PID\t\tPriority\tStack Size\n1\t\t63\t\t4096\n0\t\t9\t\t4096\nTotal 2 tasks"
+      },
+      {
+        "evidence_id": "R3",
+        "command": "tick",
+        "output": "Current Tick: 5583"
+      },
+      {
+        "evidence_id": "R4",
+        "command": "mem",
+        "output": "=================== Memory & Task Runtime Info ===================\nSystem has been running for 7506 ticks\nPID\t\tPriority\tStack Size\tRun Time(Ticks)\n1\t\t63\t\t4096\t\t7503\n0\t\t9\t\t4096\t\t0\nTotal 2 tasks\n=================== Memory Info ===================\nStack Memory Pool:\n  Total Blocks: 20 (Total: 81920 bytes)\n  Used Blocks:  4 (Used:  16384 bytes)\n  Free Blocks:  16 (Free:  65536 bytes)\n  Usage: 20%"
+      }
+    ],
+    "feature_hints": [
+      "F_UART",
+      "F_TIMER",
+      "F_TASK",
+      "F_SHELL"
+    ],
+    "anomalies": [],
+    "output_bytes": 1238,
+    "duration_s": 21.3,
+    "log_file": "logs/p1/run.log",
+    "error": null
+  },
+  "scan": {
+    "status": "passed",
+    "mode": "full",
+    "target": "aarch64-none-elf",
+    "files_total": 15,
+    "files_scanned": 14,
+    "files_failed": [
+      {
+        "path": "src/kernel/sched/prt_sched_single.c",
+        "reason": "error: conflicting types for 'OsMainSchedule'"
+      }
+    ],
+    "coverage": 0.93,
+    "findings_total": 7,
+    "findings": [
+      {
+        "evidence_id": "C1",
+        "checker": "core.NullDereference",
+        "path": "src/bsp/vsnprintf_s.c",
+        "line": 347,
+        "column": null,
+        "message": "Dereference of null pointer (loaded from variable 'str')",
+        "defect_type": "NULL_DEREF",
+        "severity": "严重",
+        "in_baseline_unchanged": true
+      },
+      {
+        "evidence_id": "C2",
+        "checker": "core.NullDereference",
+        "path": "src/bsp/vsnprintf_s.c",
+        "line": 438,
+        "column": null,
+        "message": "Dereference of null pointer (loaded from variable 'str')",
+        "defect_type": "NULL_DEREF",
+        "severity": "严重",
+        "in_baseline_unchanged": true
+      },
+      {
+        "evidence_id": "C3",
+        "checker": "core.NullDereference",
+        "path": "src/bsp/vsnprintf_s.c",
+        "line": 447,
+        "column": null,
+        "message": "Dereference of null pointer (loaded from variable 'str')",
+        "defect_type": "NULL_DEREF",
+        "severity": "严重",
+        "in_baseline_unchanged": true
+      },
+      {
+        "evidence_id": "C4",
+        "checker": "core.NullDereference",
+        "path": "src/bsp/vsnprintf_s.c",
+        "line": 454,
+        "column": null,
+        "message": "Dereference of null pointer (loaded from variable 'str')",
+        "defect_type": "NULL_DEREF",
+        "severity": "严重",
+        "in_baseline_unchanged": true
+      },
+      {
+        "evidence_id": "C5",
+        "checker": "core.NullDereference",
+        "path": "src/bsp/vsnprintf_s.c",
+        "line": 557,
+        "column": null,
+        "message": "Dereference of null pointer (loaded from variable 'str')",
+        "defect_type": "NULL_DEREF",
+        "severity": "严重",
+        "in_baseline_unchanged": true
+      },
+      {
+        "evidence_id": "C6",
+        "checker": "core.NullDereference",
+        "path": "src/bsp/vsnprintf_s.c",
+        "line": 603,
+        "column": null,
+        "message": "Dereference of null pointer (loaded from variable 'str')",
+        "defect_type": "NULL_DEREF",
+        "severity": "严重",
+        "in_baseline_unchanged": true
+      },
+      {
+        "evidence_id": "C7",
+        "checker": "deadcode.DeadStores",
+        "path": "src/main.c",
+        "line": 57,
+        "column": null,
+        "message": "Value stored to 'ret' is never read",
+        "defect_type": "UNUSED",
+        "severity": "轻微",
+        "in_baseline_unchanged": false
+      }
+    ],
+    "duration_s": 12.8,
+    "log_file": "logs/p1/scan.log",
+    "error": null
+  },
+  "diff": {
+    "status": "passed",
+    "ref_repo": "https://gitee.com/leeboby/os2024_exp_redo_kp",
+    "ref_commit": "0bd1ef59f32867842f0c3047a58d62bced82d54b",
+    "baseline": "lab10",
+    "candidates": {
+      "lab1": 7,
+      "lab2": 9,
+      "lab4": 11,
+      "lab5": 19,
+      "lab6": 32,
+      "lab7": 37,
+      "lab8": 39,
+      "lab10": 40
+    },
+    "same": 14,
+    "modified": 26,
+    "added": 10,
+    "files": [
+      {
+        "evidence_id": "D1",
+        "path": "makeMiniEuler.sh",
+        "change": "modified",
+        "added_lines": 4,
+        "removed_lines": 1,
+        "hunks": [
+          {
+            "start": 1,
+            "end": 2
+          },
+          {
+            "start": 5,
+            "end": 6
+          }
+        ]
+      },
+      {
+        "evidence_id": "D2",
+        "path": "runMiniEuler.sh",
+        "change": "added",
+        "added_lines": 6,
+        "removed_lines": 0,
+        "hunks": [
+          {
+            "start": 1,
+            "end": 6
+          }
+        ]
+      },
+      {
+        "evidence_id": "D3",
+        "path": "src/CMakeLists.txt",
+        "change": "modified",
+        "added_lines": 6,
+        "removed_lines": 15,
+        "hunks": [
+          {
+            "start": 6,
+            "end": 6
+          },
+          {
+            "start": 18,
+            "end": 19
+          },
+          {
+            "start": 25,
+            "end": 25
+          },
+          {
+            "start": 36,
+            "end": 36
+          },
+          {
+            "start": 38,
+            "end": 38
+          }
+        ]
+      },
+      {
+        "evidence_id": "D4",
+        "path": "src/aarch64-qemu.ld",
+        "change": "added",
+        "added_lines": 121,
+        "removed_lines": 0,
+        "hunks": [
+          {
+            "start": 1,
+            "end": 121
+          }
+        ]
+      },
+      {
+        "evidence_id": "D5",
+        "path": "src/bsp/CMakeLists.txt",
+        "change": "modified",
+        "added_lines": 1,
+        "removed_lines": 1,
+        "hunks": [
+          {
+            "start": 1,
+            "end": 1
+          }
+        ]
+      },
+      {
+        "evidence_id": "D6",
+        "path": "src/bsp/cache_asm.S",
+        "change": "modified",
+        "added_lines": 12,
+        "removed_lines": 0,
+        "hunks": [
+          {
+            "start": 2,
+            "end": 3
+          },
+          {
+            "start": 80,
+            "end": 89
+          }
+        ]
+      },
+      {
+        "evidence_id": "D7",
+        "path": "src/bsp/hwi_init.c",
+        "change": "modified",
+        "added_lines": 129,
+        "removed_lines": 258,
+        "hunks": [
+          {
+            "start": 1,
+            "end": 2
+          },
+          {
+            "start": 4,
+            "end": 4
+          },
+          {
+            "start": 6,
+            "end": 7
+          },
+          {
+            "start": 9,
+            "end": 20
+          },
+          {
+            "start": 23,
+            "end": 31
+          },
+          {
+            "start": 33,
+            "end": 39
+          },
+          {
+            "start": 41,
+            "end": 71
+          },
+          {
+            "start": 73,
+            "end": 78
+          },
+          {
+            "start": 81,
+            "end": 83
+          },
+          {
+            "start": 87,
+            "end": 91
+          },
+          {
+            "start": 93,
+            "end": 98
+          },
+          {
+            "start": 101,
+            "end": 104
+          },
+          {
+            "start": 106,
+            "end": 111
+          },
+          {
+            "start": 114,
+            "end": 114
+          },
+          {
+            "start": 116,
+            "end": 116
+          },
+          {
+            "start": 119,
+            "end": 126
+          },
+          {
+            "start": 129,
+            "end": 136
+          },
+          {
+            "start": 139,
+            "end": 142
+          },
+          {
+            "start": 144,
+            "end": 147
+          },
+          {
+            "start": 150,
+            "end": 153
+          },
+          {
+            "start": 155,
+            "end": 158
+          },
+          {
+            "start": 164,
+            "end": 164
+          }
+        ]
+      },
+      {
+        "evidence_id": "D8",
+        "path": "src/bsp/mmu.c",
+        "change": "modified",
+        "added_lines": 52,
+        "removed_lines": 22,
+        "hunks": [
+          {
+            "start": 10,
+            "end": 13
+          },
+          {
+            "start": 16,
+            "end": 20
+          },
+          {
+            "start": 22,
+            "end": 26
+          },
+          {
+            "start": 32,
+            "end": 32
+          },
+          {
+            "start": 41,
+            "end": 41
+          },
+          {
+            "start": 46,
+            "end": 47
+          },
+          {
+            "start": 68,
+            "end": 68
+          },
+          {
+            "start": 77,
+            "end": 77
+          },
+          {
+            "start": 95,
+            "end": 95
+          },
+          {
+            "start": 105,
+            "end": 105
+          },
+          {
+            "start": 118,
+            "end": 118
+          },
+          {
+            "start": 120,
+            "end": 120
+          },
+          {
+            "start": 127,
+            "end": 127
+          },
+          {
+            "start": 130,
+            "end": 130
+          },
+          {
+            "start": 135,
+            "end": 136
+          },
+          {
+            "start": 141,
+            "end": 141
+          },
+          {
+            "start": 152,
+            "end": 152
+          },
+          {
+            "start": 164,
+            "end": 164
+          },
+          {
+            "start": 171,
+            "end": 171
+          },
+          {
+            "start": 184,
+            "end": 184
+          },
+          {
+            "start": 188,
+            "end": 188
+          },
+          {
+            "start": 193,
+            "end": 193
+          },
+          {
+            "start": 195,
+            "end": 195
+          },
+          {
+            "start": 197,
+            "end": 197
+          },
+          {
+            "start": 202,
+            "end": 202
+          },
+          {
+            "start": 204,
+            "end": 205
+          },
+          {
+            "start": 208,
+            "end": 208
+          },
+          {
+            "start": 215,
+            "end": 215
+          },
+          {
+            "start": 233,
+            "end": 233
+          },
+          {
+            "start": 235,
+            "end": 235
+          },
+          {
+            "start": 241,
+            "end": 242
+          },
+          {
+            "start": 266,
+            "end": 266
+          },
+          {
+            "start": 288,
+            "end": 288
+          },
+          {
+            "start": 304,
+            "end": 304
+          },
+          {
+            "start": 332,
+            "end": 332
+          },
+          {
+            "start": 339,
+            "end": 340
+          }
+        ]
+      },
+      {
+        "evidence_id": "D9",
+        "path": "src/bsp/mmu.h",
+        "change": "added",
+        "added_lines": 206,
+        "removed_lines": 0,
+        "hunks": [
+          {
+            "start": 1,
+            "end": 206
+          }
+        ]
+      },
+      {
+        "evidence_id": "D10",
+        "path": "src/bsp/os_attr_armv8_external.h",
+        "change": "added",
+        "added_lines": 70,
+        "removed_lines": 0,
+        "hunks": [
+          {
+            "start": 1,
+            "end": 70
+          }
+        ]
+      },
+      {
+        "evidence_id": "D11",
+        "path": "src/bsp/os_cpu_armv8_external.h",
+        "change": "added",
+        "added_lines": 27,
+        "removed_lines": 0,
+        "hunks": [
+          {
+            "start": 1,
+            "end": 27
+          }
+        ]
+      },
+      {
+        "evidence_id": "D12",
+        "path": "src/bsp/os_exc_armv8.h",
+        "change": "added",
+        "added_lines": 18,
+        "removed_lines": 0,
+        "hunks": [
+          {
+            "start": 1,
+            "end": 18
+          }
+        ]
+      },
+      {
+        "evidence_id": "D13",
+        "path": "src/bsp/print.c",
+        "change": "modified",
+        "added_lines": 140,
+        "removed_lines": 9,
+        "hunks": [
+          {
+            "start": 3,
+            "end": 4
+          },
+          {
+            "start": 6,
+            "end": 6
+          },
+          {
+            "start": 17,
+            "end": 31
+          },
+          {
+            "start": 36,
+            "end": 36
+          },
+          {
+            "start": 38,
+            "end": 115
+          },
+          {
+            "start": 118,
+            "end": 134
+          },
+          {
+            "start": 150,
+            "end": 150
+          },
+          {
+            "start": 177,
+            "end": 201
+          }
+        ]
+      },
+      {
+        "evidence_id": "D14",
+        "path": "src/bsp/prt_exc.c",
+        "change": "modified",
+        "added_lines": 17,
+        "removed_lines": 18,
+        "hunks": [
+          {
+            "start": 11,
+            "end": 11
+          },
+          {
+            "start": 14,
+            "end": 14
+          },
+          {
+            "start": 23,
+            "end": 23
+          },
+          {
+            "start": 29,
+            "end": 29
+          },
+          {
+            "start": 33,
+            "end": 33
+          },
+          {
+            "start": 40,
+            "end": 40
+          },
+          {
+            "start": 43,
+            "end": 43
+          },
+          {
+            "start": 57,
+            "end": 58
+          },
+          {
+            "start": 73,
+            "end": 77
+          },
+          {
+            "start": 80,
+            "end": 82
+          }
+        ]
+      },
+      {
+        "evidence_id": "D15",
+        "path": "src/bsp/prt_reset_vector.S",
+        "change": "modified",
+        "added_lines": 0,
+        "removed_lines": 2,
+        "hunks": []
+      },
+      {
+        "evidence_id": "D16",
+        "path": "src/bsp/prt_vector.S",
+        "change": "modified",
+        "added_lines": 62,
+        "removed_lines": 65,
+        "hunks": [
+          {
+            "start": 49,
+            "end": 108
+          },
+          {
+            "start": 169,
+            "end": 169
+          },
+          {
+            "start": 196,
+            "end": 196
+          }
+        ]
+      },
+      {
+        "evidence_id": "D17",
+        "path": "src/bsp/start.S",
+        "change": "modified",
+        "added_lines": 9,
+        "removed_lines": 74,
+        "hunks": [
+          {
+            "start": 18,
+            "end": 18
+          },
+          {
+            "start": 24,
+            "end": 24
+          },
+          {
+            "start": 27,
+            "end": 29
+          },
+          {
+            "start": 32,
+            "end": 35
+          }
+        ]
+      },
+      {
+        "evidence_id": "D18",
+        "path": "src/bsp/timer.c",
+        "change": "modified",
+        "added_lines": 9,
+        "removed_lines": 4,
+        "hunks": [
+          {
+            "start": 6,
+            "end": 9
+          },
+          {
+            "start": 13,
+            "end": 17
+          }
+        ]
+      },
+      {
+        "evidence_id": "",
+        "path": "src/bsp/vsnprintf_s.c",
+        "change": "same",
+        "added_lines": 0,
+        "removed_lines": 0,
+        "hunks": []
+      },
+      {
+        "evidence_id": "",
+        "path": "src/include/list_types.h",
+        "change": "same",
+        "added_lines": 0,
+        "removed_lines": 0,
+        "hunks": []
+      },
+      {
+        "evidence_id": "D19",
+        "path": "src/include/os_cpu_armv8.h",
+        "change": "modified",
+        "added_lines": 2,
+        "removed_lines": 46,
+        "hunks": [
+          {
+            "start": 23,
+            "end": 24
+          }
+        ]
+      },
+      {
+        "evidence_id": "",
+        "path": "src/include/prt_amp_task_internal.h",
+        "change": "same",
+        "added_lines": 0,
+        "removed_lines": 0,
+        "hunks": []
+      },
+      {
+        "evidence_id": "",
+        "path": "src/include/prt_asm_cpu_external.h",
+        "change": "same",
+        "added_lines": 0,
+        "removed_lines": 0,
+        "hunks": []
+      },
+      {
+        "evidence_id": "D20",
+        "path": "src/include/prt_config.h",
+        "change": "modified",
+        "added_lines": 0,
+        "removed_lines": 1,
+        "hunks": []
+      },
+      {
+        "evidence_id": "",
+        "path": "src/include/prt_errno.h",
+        "change": "same",
+        "added_lines": 0,
+        "removed_lines": 0,
+        "hunks": []
+      },
+      {
+        "evidence_id": "",
+        "path": "src/include/prt_list_external.h",
+        "change": "same",
+        "added_lines": 0,
+        "removed_lines": 0,
+        "hunks": []
+      },
+      {
+        "evidence_id": "",
+        "path": "src/include/prt_module.h",
+        "change": "same",
+        "added_lines": 0,
+        "removed_lines": 0,
+        "hunks": []
+      },
+      {
+        "evidence_id": "",
+        "path": "src/include/prt_sem.h",
+        "change": "same",
+        "added_lines": 0,
+        "removed_lines": 0,
+        "hunks": []
+      },
+      {
+        "evidence_id": "",
+        "path": "src/include/prt_sem_external.h",
+        "change": "same",
+        "added_lines": 0,
+        "removed_lines": 0,
+        "hunks": []
+      },
+      {
+        "evidence_id": "",
+        "path": "src/include/prt_shell.h",
+        "change": "same",
+        "added_lines": 0,
+        "removed_lines": 0,
+        "hunks": []
+      },
+      {
+        "evidence_id": "D21",
+        "path": "src/include/prt_task.h",
+        "change": "modified",
+        "added_lines": 0,
+        "removed_lines": 385,
+        "hunks": []
+      },
+      {
+        "evidence_id": "D22",
+        "path": "src/include/prt_task_external.h",
+        "change": "modified",
+        "added_lines": 4,
+        "removed_lines": 21,
+        "hunks": [
+          {
+            "start": 84,
+            "end": 87
+          }
+        ]
+      },
+      {
+        "evidence_id": "D23",
+        "path": "src/include/prt_tick.h",
+        "change": "modified",
+        "added_lines": 0,
+        "removed_lines": 15,
+        "hunks": []
+      },
+      {
+        "evidence_id": "D24",
+        "path": "src/include/prt_typedef.h",
+        "change": "modified",
+        "added_lines": 2,
+        "removed_lines": 2,
+        "hunks": [
+          {
+            "start": 13,
+            "end": 13
+          },
+          {
+            "start": 52,
+            "end": 52
+          }
+        ]
+      },
+      {
+        "evidence_id": "D25",
+        "path": "src/kernel/CMakeLists.txt",
+        "change": "modified",
+        "added_lines": 0,
+        "removed_lines": 3,
+        "hunks": []
+      },
+      {
+        "evidence_id": "",
+        "path": "src/kernel/sched/CMakeLists.txt",
+        "change": "same",
+        "added_lines": 0,
+        "removed_lines": 0,
+        "hunks": []
+      },
+      {
+        "evidence_id": "D26",
+        "path": "src/kernel/sched/prt_sched_single.c",
+        "change": "modified",
+        "added_lines": 42,
+        "removed_lines": 10,
+        "hunks": [
+          {
+            "start": 1,
+            "end": 15
+          },
+          {
+            "start": 20,
+            "end": 20
+          },
+          {
+            "start": 37,
+            "end": 37
+          },
+          {
+            "start": 52,
+            "end": 52
+          },
+          {
+            "start": 55,
+            "end": 63
+          },
+          {
+            "start": 70,
+            "end": 72
+          },
+          {
+            "start": 84,
+            "end": 92
+          },
+          {
+            "start": 104,
+            "end": 106
+          }
+        ]
+      },
+      {
+        "evidence_id": "D27",
+        "path": "src/kernel/sem/CMakeLists.txt",
+        "change": "modified",
+        "added_lines": 1,
+        "removed_lines": 1,
+        "hunks": [
+          {
+            "start": 1,
+            "end": 1
+          }
+        ]
+      },
+      {
+        "evidence_id": "",
+        "path": "src/kernel/sem/prt_sem.c",
+        "change": "same",
+        "added_lines": 0,
+        "removed_lines": 0,
+        "hunks": []
+      },
+      {
+        "evidence_id": "",
+        "path": "src/kernel/sem/prt_sem_init.c",
+        "change": "same",
+        "added_lines": 0,
+        "removed_lines": 0,
+        "hunks": []
+      },
+      {
+        "evidence_id": "D28",
+        "path": "src/kernel/task/CMakeLists.txt",
+        "change": "modified",
+        "added_lines": 1,
+        "removed_lines": 1,
+        "hunks": [
+          {
+            "start": 1,
+            "end": 1
+          }
+        ]
+      },
+      {
+        "evidence_id": "D29",
+        "path": "src/kernel/task/prt_sys.c",
+        "change": "added",
+        "added_lines": 25,
+        "removed_lines": 0,
+        "hunks": [
+          {
+            "start": 1,
+            "end": 25
+          }
+        ]
+      },
+      {
+        "evidence_id": "D30",
+        "path": "src/kernel/task/prt_task.c",
+        "change": "modified",
+        "added_lines": 5,
+        "removed_lines": 7,
+        "hunks": [
+          {
+            "start": 74,
+            "end": 74
+          },
+          {
+            "start": 80,
+            "end": 80
+          },
+          {
+            "start": 84,
+            "end": 84
+          },
+          {
+            "start": 86,
+            "end": 87
+          }
+        ]
+      },
+      {
+        "evidence_id": "D31",
+        "path": "src/kernel/task/prt_task_init.c",
+        "change": "modified",
+        "added_lines": 44,
+        "removed_lines": 5,
+        "hunks": [
+          {
+            "start": 10,
+            "end": 10
+          },
+          {
+            "start": 17,
+            "end": 18
+          },
+          {
+            "start": 27,
+            "end": 58
+          },
+          {
+            "start": 86,
+            "end": 86
+          },
+          {
+            "start": 138,
+            "end": 138
+          },
+          {
+            "start": 164,
+            "end": 165
+          },
+          {
+            "start": 290,
+            "end": 290
+          },
+          {
+            "start": 375,
+            "end": 378
+          }
+        ]
+      },
+      {
+        "evidence_id": "",
+        "path": "src/kernel/tick/CMakeLists.txt",
+        "change": "same",
+        "added_lines": 0,
+        "removed_lines": 0,
+        "hunks": []
+      },
+      {
+        "evidence_id": "D32",
+        "path": "src/kernel/tick/prt_tick.c",
+        "change": "modified",
+        "added_lines": 2,
+        "removed_lines": 13,
+        "hunks": [
+          {
+            "start": 35,
+            "end": 35
+          },
+          {
+            "start": 38,
+            "end": 38
+          }
+        ]
+      },
+      {
+        "evidence_id": "D33",
+        "path": "src/main.c",
+        "change": "modified",
+        "added_lines": 25,
+        "removed_lines": 20,
+        "hunks": [
+          {
+            "start": 5,
+            "end": 5
+          },
+          {
+            "start": 12,
+            "end": 14
+          },
+          {
+            "start": 18,
+            "end": 32
+          },
+          {
+            "start": 40,
+            "end": 41
+          },
+          {
+            "start": 54,
+            "end": 54
+          },
+          {
+            "start": 56,
+            "end": 57
+          },
+          {
+            "start": 60,
+            "end": 60
+          }
+        ]
+      },
+      {
+        "evidence_id": "D34",
+        "path": "src/shell/CMakeLists.txt",
+        "change": "added",
+        "added_lines": 2,
+        "removed_lines": 0,
+        "hunks": [
+          {
+            "start": 1,
+            "end": 2
+          }
+        ]
+      },
+      {
+        "evidence_id": "D35",
+        "path": "src/shell/shmsg.c",
+        "change": "added",
+        "added_lines": 142,
+        "removed_lines": 0,
+        "hunks": [
+          {
+            "start": 1,
+            "end": 142
+          }
+        ]
+      },
+      {
+        "evidence_id": "D36",
+        "path": "创新功能实现.md",
+        "change": "added",
+        "added_lines": 395,
+        "removed_lines": 0,
+        "hunks": [
+          {
+            "start": 1,
+            "end": 395
+          }
+        ]
+      }
+    ],
+    "note": "",
+    "error": null
+  },
+  "summary": "工程能编译并在 QEMU 中正常启动，串口、异常、时钟中断、任务、信号量和 shell 都已实现；创新点 mem 命令能显示任务运行时间和栈内存池使用情况，运行输出与说明一致。主要问题集中在 shell：命令缓冲区没有长度检查，遍历就绪队列时没有关中断保护。调度部分有一处隐式函数声明，建议补上声明。",
+  "features": [
+    {
+      "feature_id": "F_UART",
+      "status": "done",
+      "reason": "启动后串口输出了 logo 和提示信息",
+      "locations": [
+        {
+          "path": "src/bsp/print.c",
+          "line": 166
+        }
+      ],
+      "evidence_ids": [
+        "R1"
+      ]
+    },
+    {
+      "feature_id": "F_EXC",
+      "status": "done",
+      "reason": "实现了同步异常和中断的入口与分发",
+      "locations": [
+        {
+          "path": "src/bsp/prt_exc.c",
+          "line": 9
+        }
+      ],
+      "evidence_ids": []
+    },
+    {
+      "feature_id": "F_TIMER",
+      "status": "done",
+      "reason": "tick 命令显示的节拍数持续增长，说明时钟中断在工作",
+      "locations": [
+        {
+          "path": "src/kernel/tick/prt_tick.c",
+          "line": 14
+        }
+      ],
+      "evidence_ids": [
+        "R3"
+      ]
+    },
+    {
+      "feature_id": "F_TASK",
+      "status": "done",
+      "reason": "能创建任务并切换，top 显示 2 个任务",
+      "locations": [
+        {
+          "path": "src/kernel/task/prt_task_init.c",
+          "line": 285
+        }
+      ],
+      "evidence_ids": [
+        "R2"
+      ]
+    },
+    {
+      "feature_id": "F_SCHED",
+      "status": "partial",
+      "reason": "实现了基于优先级的单核调度，但 OsMainSchedule 在定义前被调用且没有声明",
+      "locations": [
+        {
+          "path": "src/kernel/sched/prt_sched_single.c",
+          "line": 25
+        }
+      ],
+      "evidence_ids": [
+        "B1"
+      ]
+    },
+    {
+      "feature_id": "F_SEM",
+      "status": "done",
+      "reason": "实现了信号量的创建、等待和释放，shell 用信号量等待串口输入",
+      "locations": [
+        {
+          "path": "src/kernel/sem/prt_sem.c",
+          "line": 106
+        }
+      ],
+      "evidence_ids": []
+    },
+    {
+      "feature_id": "F_SHELL",
+      "status": "done",
+      "reason": "shell 能响应 top、tick、mem 三条命令",
+      "locations": [
+        {
+          "path": "src/shell/shmsg.c",
+          "line": 75
+        }
+      ],
+      "evidence_ids": [
+        "R2",
+        "R3",
+        "R4"
+      ]
+    },
+    {
+      "feature_id": "F_INNOV",
+      "status": "done",
+      "reason": "新增 mem 命令，统计任务运行时间和栈内存池使用率，运行结果正确",
+      "locations": [
+        {
+          "path": "src/shell/shmsg.c",
+          "line": 21
+        }
+      ],
+      "evidence_ids": [
+        "R4",
+        "D35"
+      ]
+    }
+  ],
+  "defects": [
+    {
+      "type": "OUT_OF_BOUNDS",
+      "path": "src/shell/shmsg.c",
+      "line": 96,
+      "title": "shell 命令缓冲区没有长度检查",
+      "description": "读取串口字符时 idx 一直自增，只有遇到回车才停止。输入超过 SHELL_SHOW_MAX_LEN 个字符就会写出 cmd 数组，破坏栈上的其他数据。",
+      "source": "llm",
+      "evidence_ids": [
+        "S2"
+      ],
+      "knowledge": "内核栈没有用户态那样的保护页，越界写会直接覆盖相邻变量甚至返回地址，导致内核崩溃。这属于地址空间与内存保护问题：内核代码必须自己检查每一次数组访问的边界。",
+      "suggestion": "写入前检查 idx，缓冲区满了就丢弃后续字符或直接执行命令。",
+      "before": "cmd[idx] = ch;\nidx++;",
+      "after": "if (idx < SHELL_SHOW_MAX_LEN - 1) {\n    cmd[idx++] = ch;\n}",
+      "severity": "严重",
+      "type_name": "数组越界",
+      "knowledge_category": "K_ADDR",
+      "in_student_change": true,
+      "in_baseline_unchanged": false,
+      "counted": true
+    },
+    {
+      "type": "RACE",
+      "path": "src/shell/shmsg.c",
+      "line": 33,
+      "title": "遍历就绪队列时没有关中断",
+      "description": "mem 命令在普通任务里遍历 g_runQueue，期间时钟中断可能触发调度、修改队列，遍历可能访问到已经移走的节点。",
+      "source": "llm",
+      "evidence_ids": [
+        "S1"
+      ],
+      "knowledge": "就绪队列是调度器和普通任务共享的数据，读写它的代码段就是临界区。单核系统里保护临界区最简单的办法是先关中断，访问完再恢复，避免竞态条件。",
+      "suggestion": "遍历前调用 PRT_HwiLock() 保存中断状态，遍历结束后 PRT_HwiRestore() 恢复；打印放到临界区外面。",
+      "before": "LIST_FOR_EACH(taskCb, &g_runQueue, struct TagTskCb, pendList) {",
+      "after": "uintptr_t intSave = PRT_HwiLock();\nLIST_FOR_EACH(taskCb, &g_runQueue, struct TagTskCb, pendList) {\n    /* 只拷贝要显示的字段 */\n}\nPRT_HwiRestore(intSave);",
+      "severity": "严重",
+      "type_name": "共享变量未加保护",
+      "knowledge_category": "K_CRIT",
+      "in_student_change": true,
+      "in_baseline_unchanged": false,
+      "counted": true
+    },
+    {
+      "type": "OTHER_NORMAL",
+      "path": "src/kernel/sched/prt_sched_single.c",
+      "line": 37,
+      "title": "函数在声明前被调用",
+      "description": "OsMainSchedule 在第 49 行才定义，第 37 行调用时编译器只能按隐式声明处理，返回类型和参数都可能被推断错。",
+      "source": "gcc+llm",
+      "evidence_ids": [
+        "B1",
+        "B2"
+      ],
+      "knowledge": "C99 之后不允许隐式函数声明。调度相关函数被错误推断类型时，调用约定可能不一致，上下文切换会出现难查的错误。",
+      "suggestion": "在文件开头或头文件里加上 void OsMainSchedule(void); 声明。",
+      "before": "",
+      "after": "void OsMainSchedule(void);",
+      "severity": "一般",
+      "type_name": "其他一般问题",
+      "knowledge_category": "K_GENERAL",
+      "in_student_change": true,
+      "in_baseline_unchanged": false,
+      "counted": true
+    },
+    {
+      "type": "UNUSED",
+      "path": "src/main.c",
+      "line": 57,
+      "title": "返回值赋给 ret 后没有使用",
+      "description": "ret 接收了初始化函数的返回值，但之后没有检查。",
+      "source": "clang+llm",
+      "evidence_ids": [
+        "C7"
+      ],
+      "knowledge": "初始化函数的返回值反映硬件或资源是否就绪，忽略它会让后续错误更难定位。",
+      "suggestion": "检查 ret，失败时打印错误并停止启动。",
+      "before": "",
+      "after": "",
+      "severity": "轻微",
+      "type_name": "变量或函数未使用",
+      "knowledge_category": "K_GENERAL",
+      "in_student_change": true,
+      "in_baseline_unchanged": false,
+      "counted": true
+    },
+    {
+      "type": "NULL_DEREF",
+      "path": "src/bsp/vsnprintf_s.c",
+      "line": 347,
+      "title": "格式化函数可能解引用空指针",
+      "description": "clang 认为 str 在某条路径上为空仍被写入。该文件与参考代码完全相同，不是本次提交引入的。",
+      "source": "clang",
+      "evidence_ids": [
+        "C1"
+      ],
+      "knowledge": "空指针解引用在裸机内核里会触发同步异常。调用方传参前应保证缓冲区有效。",
+      "suggestion": "在函数入口检查 str 是否为空。",
+      "before": "",
+      "after": "",
+      "severity": "严重",
+      "type_name": "空指针解引用",
+      "knowledge_category": "K_ADDR",
+      "in_student_change": false,
+      "in_baseline_unchanged": true,
+      "counted": false
+    }
+  ],
+  "style": {
+    "grade": "medium",
+    "reason": "新增代码有注释，函数划分清楚；但缓冲区长度、打印格式等处使用了魔法数字，部分函数缺少说明。"
+  },
+  "innovation": {
+    "claimed": "实现 mem 命令：显示系统内存使用情况和任务运行时间统计",
+    "found_in_code": true,
+    "comment": "代码里确有 OsDisplayMemAndRuntimeInfo，并在任务切换时累计运行时间；运行输出与说明一致。",
+    "locations": [
+      {
+        "path": "src/shell/shmsg.c",
+        "line": 21
+      },
+      {
+        "path": "src/kernel/task/prt_task.c",
+        "line": 80
+      }
+    ]
+  },
+  "score": {
+    "mode": "full",
+    "items": [
+      {
+        "key": "compile_run",
+        "name": "编译与运行",
+        "max": 20.0,
+        "score": 19.0,
+        "reasons": [
+          "编译通过，2 条警告扣 1 分",
+          "QEMU 中正常启动"
+        ]
+      },
+      {
+        "key": "features",
+        "name": "功能完成度",
+        "max": 40.0,
+        "score": 37.5,
+        "reasons": [
+          "完成 7 项，部分完成 1 项（任务调度）"
+        ]
+      },
+      {
+        "key": "reliability",
+        "name": "代码可靠性",
+        "max": 25.0,
+        "score": 12.0,
+        "reasons": [
+          "严重 2 个扣 10 分",
+          "一般 1 个扣 2 分",
+          "轻微 1 个扣 1 分",
+          "参考代码原有的 1 个问题不扣分"
+        ]
+      },
+      {
+        "key": "style",
+        "name": "规范与可读性",
+        "max": 15.0,
+        "score": 10.0,
+        "reasons": [
+          "中：新增代码有注释，函数划分清楚；但缓冲区长度、打印格式等处使用了魔法数字，部分函数缺少说明。"
+        ]
+      }
+    ],
+    "raw_total": 78.5,
+    "total": 79,
+    "grade": "中等",
+    "deductions": [
+      {
+        "defect_index": 0,
+        "type": "OUT_OF_BOUNDS",
+        "severity": "严重",
+        "points": 5
+      },
+      {
+        "defect_index": 1,
+        "type": "RACE",
+        "severity": "严重",
+        "points": 5
+      },
+      {
+        "defect_index": 2,
+        "type": "OTHER_NORMAL",
+        "severity": "一般",
+        "points": 2
+      },
+      {
+        "defect_index": 3,
+        "type": "UNUSED",
+        "severity": "轻微",
+        "points": 1
+      }
+    ]
+  },
+  "tool_calls": [
+    {
+      "seq": 1,
+      "source": "pipeline",
+      "tool": "compile_project",
+      "input": {},
+      "status": "passed",
+      "started_at": "2026-10-18T16:30:01+08:00",
+      "duration_ms": 6400,
+      "summary": "编译通过，2 条警告，0 个错误",
+      "evidence_ids": []
+    },
+    {
+      "seq": 2,
+      "source": "pipeline",
+      "tool": "run_kernel",
+      "input": {},
+      "status": "passed",
+      "started_at": "2026-10-18T16:30:02+08:00",
+      "duration_ms": 21300,
+      "summary": "运行通过，已启动，识别到提示符 'miniEuler # '",
+      "evidence_ids": []
+    },
+    {
+      "seq": 3,
+      "source": "pipeline",
+      "tool": "clang_scan",
+      "input": {},
+      "status": "passed",
+      "started_at": "2026-10-18T16:30:03+08:00",
+      "duration_ms": 12800,
+      "summary": "扫描 14/15 个文件，7 条告警",
+      "evidence_ids": []
+    },
+    {
+      "seq": 4,
+      "source": "pipeline",
+      "tool": "diff_reference",
+      "input": {},
+      "status": "passed",
+      "started_at": "2026-10-18T16:30:04+08:00",
+      "duration_ms": 300,
+      "summary": "基线 lab10：相同 14，修改 26，新增 10",
+      "evidence_ids": []
+    },
+    {
+      "seq": 5,
+      "source": "agent",
+      "tool": "list_files",
+      "input": {
+        "task_id": "t20261018163000a1b2c3",
+        "project_id": "p1"
+      },
+      "status": "passed",
+      "started_at": "2026-10-18T16:30:05+08:00",
+      "duration_ms": 15,
+      "summary": "共 50 个文件",
+      "evidence_ids": []
+    },
+    {
+      "seq": 6,
+      "source": "agent",
+      "tool": "compile_project",
+      "input": {
+        "task_id": "t20261018163000a1b2c3",
+        "project_id": "p1"
+      },
+      "status": "passed",
+      "started_at": "2026-10-18T16:30:06+08:00",
+      "duration_ms": 8,
+      "summary": "编译 passed，2 条警告，0 个错误",
+      "evidence_ids": [
+        "B1",
+        "B2",
+        "B3"
+      ]
+    },
+    {
+      "seq": 7,
+      "source": "agent",
+      "tool": "run_kernel",
+      "input": {
+        "task_id": "t20261018163000a1b2c3",
+        "project_id": "p1"
+      },
+      "status": "passed",
+      "started_at": "2026-10-18T16:30:07+08:00",
+      "duration_ms": 6,
+      "summary": "运行 passed，已启动，发送 3 条命令",
+      "evidence_ids": [
+        "R1",
+        "R2",
+        "R3",
+        "R4"
+      ]
+    },
+    {
+      "seq": 8,
+      "source": "agent",
+      "tool": "clang_scan",
+      "input": {
+        "task_id": "t20261018163000a1b2c3",
+        "project_id": "p1"
+      },
+      "status": "passed",
+      "started_at": "2026-10-18T16:30:08+08:00",
+      "duration_ms": 9,
+      "summary": "扫描 14/15 个文件，7 条告警",
+      "evidence_ids": [
+        "C1",
+        "C2",
+        "C3",
+        "C4",
+        "C5",
+        "C6",
+        "C7"
+      ]
+    },
+    {
+      "seq": 9,
+      "source": "agent",
+      "tool": "diff_reference",
+      "input": {
+        "task_id": "t20261018163000a1b2c3",
+        "project_id": "p1"
+      },
+      "status": "passed",
+      "started_at": "2026-10-18T16:30:09+08:00",
+      "duration_ms": 7,
+      "summary": "基线 lab10，修改 26 个文件，新增 10 个文件",
+      "evidence_ids": [
+        "D1",
+        "D2",
+        "D3",
+        "D4",
+        "D5",
+        "D6",
+        "D7",
+        "D8",
+        "D9",
+        "D10",
+        "D11",
+        "D12",
+        "D13",
+        "D14",
+        "D15",
+        "D16",
+        "D17",
+        "D18",
+        "D19",
+        "D20",
+        "D21",
+        "D22",
+        "D23",
+        "D24",
+        "D25",
+        "D26",
+        "D27",
+        "D28",
+        "D29",
+        "D30",
+        "D31",
+        "D32",
+        "D33",
+        "D34",
+        "D35",
+        "D36"
+      ]
+    },
+    {
+      "seq": 10,
+      "source": "agent",
+      "tool": "read_source",
+      "input": {
+        "task_id": "t20261018163000a1b2c3",
+        "project_id": "p1",
+        "path": "src/shell/shmsg.c",
+        "start_line": 1,
+        "end_line": 75
+      },
+      "status": "passed",
+      "started_at": "2026-10-18T16:30:10+08:00",
+      "duration_ms": 4,
+      "summary": "读取 src/shell/shmsg.c 第 1–75 行",
+      "evidence_ids": [
+        "S1"
+      ]
+    },
+    {
+      "seq": 11,
+      "source": "agent",
+      "tool": "read_source",
+      "input": {
+        "task_id": "t20261018163000a1b2c3",
+        "project_id": "p1",
+        "path": "src/shell/shmsg.c",
+        "start_line": 75,
+        "end_line": 142
+      },
+      "status": "passed",
+      "started_at": "2026-10-18T16:30:11+08:00",
+      "duration_ms": 4,
+      "summary": "读取 src/shell/shmsg.c 第 75–142 行",
+      "evidence_ids": [
+        "S2"
+      ]
+    },
+    {
+      "seq": 12,
+      "source": "agent",
+      "tool": "knowledge",
+      "input": {},
+      "status": "passed",
+      "started_at": "2026-10-18T16:30:12+08:00",
+      "duration_ms": 0,
+      "summary": "检索知识库：数组越界 内核栈",
+      "evidence_ids": []
+    },
+    {
+      "seq": 13,
+      "source": "agent",
+      "tool": "knowledge",
+      "input": {},
+      "status": "passed",
+      "started_at": "2026-10-18T16:30:13+08:00",
+      "duration_ms": 0,
+      "summary": "检索知识库：临界区 关中断",
+      "evidence_ids": []
+    }
+  ],
+  "agent_thoughts": [
+    {
+      "id": "th1",
+      "position": 1,
+      "thought": "先看工程里有哪些文件，再取编译和运行结果。",
+      "tool": "list_files",
+      "tool_input": "{\"task_id\": \"t20261018163000a1b2c3\", \"project_id\": \"p1\"}",
+      "observation": "共 50 个文件"
+    }
+  ],
+  "model": "deepseek/deepseek-flash",
+  "conversation_id": "示例会话ID",
+  "warnings": []
+}

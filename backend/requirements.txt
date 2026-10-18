@@ -1,0 +1,9 @@
+# Python 3.12（服务器 Ubuntu 24.04 自带）。版本固定，项目期间不升级；要加依赖先在群里说，由块 1 合并
+fastapi==0.146.0
+uvicorn[standard]==0.54.0
+pydantic==2.14.1
+python-multipart==0.0.32
+python-dotenv==1.2.4
+httpx==0.28.1
+pyyaml==6.0.3
+pytest==9.1.1

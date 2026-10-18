@@ -1,0 +1,18 @@
+# systemd 服务：sudo cp 到 /etc/systemd/system/（server_install.sh 会做）
+# 只能 1 个 worker：评测队列在进程内
+[Unit]
+Description=kernel-eval-agent backend
+After=network-online.target docker.service
+Wants=docker.service
+
+[Service]
+User=ubuntu
+Group=ubuntu
+WorkingDirectory=/opt/kernel-eval/current/backend
+EnvironmentFile=/opt/kernel-eval/kernel-eval.env
+ExecStart=/opt/kernel-eval/venv/bin/uvicorn app.main:app --host 127.0.0.1 --port 8000 --workers 1
+Restart=on-failure
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,24 @@
+{
+  "answer": "这条缺陷的风险在于 `cmd` 是 `ShellTask` 栈上的局部数组……（示意）\n\n修改时注意给字符串结束符留一个位置。",
+  "tool_calls": [
+    {
+      "seq": 14,
+      "source": "followup",
+      "tool": "read_source",
+      "input": {
+        "task_id": "t20261018163000a1b2c3",
+        "project_id": "p1",
+        "path": "src/shell/shmsg.c",
+        "start_line": 85,
+        "end_line": 115
+      },
+      "status": "passed",
+      "started_at": "2026-10-18T16:40:00+08:00",
+      "duration_ms": 4,
+      "summary": "读取 src/shell/shmsg.c 第 85–115 行",
+      "evidence_ids": [
+        "S3"
+      ]
+    }
+  ]
+}
