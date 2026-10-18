@@ -1,6 +1,7 @@
 # 智能体工具的接口描述，导入 Dify「工具 → 自定义工具」用。与 backend/app/core/tools_api.py 一一对应。
 # - 鉴权：在 Dify 里选「API Key → 请求头」，头名 X-Tool-Token，值为服务器 backend/.env 里的 KE_TOOL_TOKEN
-# - servers.url：Dify 调我们后端的地址，第 1 周由块 1 定（公网 IP 经 nginx，或改 SSRF 白名单走内网），定了改这里并重新导入
+# - servers.url：Dify 调我们后端的地址。走公网 IP 经 nginx 的 /tools/（2026-10-18 实测 Dify 容器经 SSRF 代理可达；
+#   内网 IP 和 docker 网关会被 SSRF 代理拦成 403，不要改成内网地址）
 # - operationId 就是工具名，后端用它判断“必调工具有没有调”，不能改
 openapi: 3.1.0
 info:

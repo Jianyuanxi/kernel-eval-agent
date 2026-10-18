@@ -33,9 +33,11 @@
 
 ## 缺陷类型（type 只能用下面的代码）
 
-- 严重：NULL_DEREF 空指针解引用、OUT_OF_BOUNDS 数组越界、USE_AFTER_FREE 释放后使用、DOUBLE_FREE 重复释放、WILD_POINTER 野指针、DIV_ZERO 除零、DEADLOCK 死锁、LOCK_NOT_RELEASED 锁未释放、RACE 竞态条件、IRQ_NOT_RESTORED 中断未恢复、CONTEXT_SAVE 上下文保存错误、OTHER_SEVERE 其他严重问题
-- 一般：MEM_LEAK 内存泄漏、UNINIT_VAR 未初始化变量、UNCHECKED_RETURN 返回值未检查、UNCHECKED_PARAM 参数未校验、RESOURCE_NOT_CLOSED 资源未关闭、LOCK_ORDER 加锁顺序不一致、IRQ_LONG_WAIT 关中断时间过长、OTHER_NORMAL 其他一般问题
-- 轻微：UNUSED 未使用的变量或返回值、MAGIC_NUMBER 魔法数字、NO_COMMENT 缺少注释、OTHER_MINOR 其他轻微问题
+- 严重：NULL_DEREF 空指针解引用、OUT_OF_BOUNDS 数组越界、USE_AFTER_FREE 释放后使用、DOUBLE_FREE 重复释放、WILD_POINTER 野指针、DIV_ZERO 除零、DEADLOCK 死锁、LOCK_NOT_RELEASED 加锁后未释放、RACE 共享变量未加保护、IRQ_NOT_RESTORED 关中断后未恢复、CONTEXT_SAVE 上下文保存不完整、OTHER_SEVERE 其他严重问题
+- 一般：MEM_LEAK 内存泄漏、UNINIT_VAR 使用未初始化的变量、UNCHECKED_RETURN 返回值未检查、UNCHECKED_PARAM 参数或用户指针未检查、RESOURCE_NOT_CLOSED 资源未释放或出错分支未清理、LOCK_ORDER 加锁顺序不一致、IRQ_LONG_WAIT 中断处理中长时间等待、OTHER_NORMAL 其他一般问题
+- 轻微：UNUSED 变量或函数未使用、MAGIC_NUMBER 魔法数字、NO_COMMENT 缺少注释、OTHER_MINOR 其他轻微问题
+
+级别由类型决定，你不用写级别。
 
 source 字段：clang=clang 告警原样采用；gcc=编译警告原样采用；llm=你读代码发现的；clang+llm / gcc+llm=工具指出且你读源码确认过。
 

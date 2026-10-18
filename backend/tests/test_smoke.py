@@ -8,16 +8,18 @@ import pytest
 from fastapi.testclient import TestClient
 
 from app import config
+from app.core import mocks
 from app.main import app
 
 TOKEN = {"X-Tool-Token": config.TOOL_TOKEN}
 
 
 def _zip() -> bytes:
+    """按示例 file_list 造一个同结构的假工程（每个文件行数一致、内容是占位），让示例里的缺陷位置都存在"""
     buf = io.BytesIO()
     with zipfile.ZipFile(buf, "w") as z:
-        z.writestr("demo/src/main.c", "int main(void) { return 0; }\n")
-        z.writestr("demo/CMakeLists.txt", "project(demo C)\n")
+        for f in mocks.example("file_list")["files"]:
+            z.writestr("demo/" + f["path"], "".join(f"/* line {i} */\n" for i in range(1, f["lines"] + 1)))
     return buf.getvalue()
 
 

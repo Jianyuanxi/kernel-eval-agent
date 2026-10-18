@@ -3,6 +3,8 @@
 每个命名空间的函数签名和真实模块完全一致，这样切换时编排代码不用改。
 """
 import json
+import shutil
+import zipfile
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -18,17 +20,51 @@ def example(name: str):
 
 
 def _ingest_upload(task_dir: Path, upload_paths: list[Path], upload_name: str) -> IngestResult:
+    """工程信息固定用示例；但会把上传内容粗略放进 projects/p1/，这样上传样例 1 时智能体能读到真实源码。
+    不做安全检查和工程识别（那是块 2 的活），只在开发期用。"""
     r = IngestResult.model_validate(example("ingest_result"))
     r.upload_name = upload_name
-    for p in r.projects:
-        (task_dir / "projects" / p.project_id).mkdir(parents=True, exist_ok=True)
+    dst = task_dir / "projects" / r.projects[0].project_id
+    dst.mkdir(parents=True, exist_ok=True)
+    for up in upload_paths:
+        if up.suffix.lower() == ".zip":
+            with zipfile.ZipFile(up) as z:
+                names = [n for n in z.namelist() if not n.endswith("/") and ".." not in n and not n.startswith("/")]
+                tops = {n.split("/")[0] for n in names}
+                strip = len(tops) == 1 and all("/" in n for n in names)
+                for n in names:
+                    rel = n.split("/", 1)[1] if strip else n
+                    (dst / rel).parent.mkdir(parents=True, exist_ok=True)
+                    (dst / rel).write_bytes(z.read(n))
+        else:
+            shutil.copy(up, dst / up.name)
     return r
 
 
+def _lines(p: Path) -> list[str]:
+    return p.read_text(encoding="utf-8", errors="replace").replace("\r\n", "\n").split("\n")
+
+
+def _list_files(project_dir: Path, project_id: str) -> FileList:
+    files = sorted(p for p in project_dir.rglob("*") if p.is_file()) if project_dir.exists() else []
+    if not files:
+        return FileList.model_validate(example("file_list"))
+    lang = {".c": "c", ".h": "h", ".s": "asm", ".ld": "ld", ".sh": "shell", ".md": "markdown"}
+    return FileList(project_id=project_id, total=len(files), files=[
+        {"path": p.relative_to(project_dir).as_posix(), "size": p.stat().st_size, "lines": len(_lines(p)),
+         "lang": "cmake" if p.name == "CMakeLists.txt" else lang.get(p.suffix.lower(), "other")} for p in files])
+
+
 def _read_source(project_dir: Path, path: str, start_line: int, end_line: int) -> SourceSlice:
-    s = SourceSlice.model_validate(example("source_slice"))
-    s.path = path
-    return s
+    f = project_dir / path
+    if not f.is_file():
+        s = SourceSlice.model_validate(example("source_slice"))
+        s.path = path
+        return s
+    lines = _lines(f)
+    end = min(end_line, len(lines), start_line + 199)
+    return SourceSlice(path=path, start_line=start_line, end_line=end, total_lines=len(lines),
+                       text="\n".join(f"{i:>5} | {lines[i - 1]}" for i in range(start_line, end + 1)))
 
 
 def _change_flags(diff, path: str, line: int):
@@ -56,7 +92,7 @@ def _render_markdown(report: Report) -> str:
 
 ingest = SimpleNamespace(
     ingest_upload=_ingest_upload,
-    list_files=lambda project_dir, project_id: FileList.model_validate(example("file_list")),
+    list_files=_list_files,
     read_source=_read_source,
 )
 diff = SimpleNamespace(

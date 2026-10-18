@@ -36,6 +36,8 @@ TOOL_TOKEN = _env("TOOL_TOKEN", "dev-token")
 DIFY_API_BASE = _env("DIFY_API_BASE", "http://127.0.0.1:8080/v1")
 DIFY_APP_KEY = _env("DIFY_APP_KEY", "")
 AGENT_TIMEOUT_S = int(_env("AGENT_TIMEOUT_S", "420"))
+# 只用于写进报告；真正用哪个模型在 Dify 应用里选，两边要一致
+MODEL_NAME = _env("MODEL_NAME", "deepseek/deepseek-flash")
 
 # 用假数据顶替还没做好的模块，逗号分隔：ingest,buildrun,analyze,diff,agent,scoring；all 表示全部
 _mock = _env("MOCK_MODULES", "")

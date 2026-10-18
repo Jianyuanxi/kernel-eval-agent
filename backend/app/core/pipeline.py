@@ -229,7 +229,7 @@ def _agent_review(info: TaskInfo, paths: TaskPaths, project: Project, build: Bui
     for t in thoughts:  # 知识库检索不经过我们的工具服务，从 agent_thought 里补记录
         if t.tool.startswith("dataset_"):
             _record(tid, "knowledge", "passed", time.monotonic(), f"检索知识库：{t.tool_input[:80]}", source="agent")
-    return review, res.conversation_id, thoughts, "deepseek/deepseek-flash"
+    return review, res.conversation_id, thoughts, config.MODEL_NAME
 
 
 # ---------------- 校验并补全缺陷 ----------------
