@@ -74,8 +74,14 @@ def run_in_sandbox(cmd: list[str], work_dir: Path, timeout_s: int, *, name: str,
         proc.wait(timeout=timeout_s)
     except subprocess.TimeoutExpired:
         timed_out = True
-        subprocess.run(["docker", "rm", "-f", cname], capture_output=True)
-        proc.wait(timeout=15)
+        try:
+            subprocess.run(["docker", "rm", "-f", cname], capture_output=True, timeout=5)
+            proc.wait(timeout=15)
+        except subprocess.TimeoutExpired as e:
+            raise SandboxError(f"超时后清理容器 {cname} 失败（docker 无响应），需要人工 docker rm -f") from e
+        finally:
+            if proc.poll() is None:
+                proc.kill()  # 本地 docker 客户端进程
     reader.join(timeout=5)
     out = buf.decode("utf-8", errors="replace").replace("\x00", "")
     if not timed_out and proc.returncode == 125:

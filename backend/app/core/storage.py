@@ -17,7 +17,7 @@ from app.schemas import TaskInfo, ToolCallRecord
 M = TypeVar("M", bound=BaseModel)
 _TASK_ID = re.compile(r"^t\d{14}[0-9a-f]{6}$")
 _PROJECT_ID = re.compile(r"^p\d{1,3}$")
-_locks: dict[str, threading.Lock] = {}
+_locks: dict[str, threading.RLock] = {}
 _locks_guard = threading.Lock()
 CST = timezone(timedelta(hours=8))
 
@@ -38,9 +38,10 @@ def valid_project_id(project_id: str) -> bool:
     return bool(_PROJECT_ID.match(project_id))
 
 
-def task_lock(task_id: str) -> threading.Lock:
+def task_lock(task_id: str) -> threading.RLock:
+    """同一任务的元数据和工具记录读写都在这把锁里；可重入，同一线程嵌套加锁不会卡死"""
     with _locks_guard:
-        return _locks.setdefault(task_id, threading.Lock())
+        return _locks.setdefault(task_id, threading.RLock())
 
 
 class TaskPaths:
@@ -109,14 +110,18 @@ def save_task(info: TaskInfo) -> None:
     write_json(TaskPaths(info.task_id).meta, info)
 
 
-def append_tool_call(task_id: str, rec: dict) -> ToolCallRecord:
-    """追加一条工具调用记录，seq 自动编号。rec 不含 seq"""
+def append_tool_call(task_id: str, rec: dict, new_source_evidence: bool = False) -> ToolCallRecord:
+    """追加一条工具调用记录，seq 自动编号。rec 不含 seq。
+
+    new_source_evidence=True 时在同一把锁里分配下一个 S 编号写进 evidence_ids（read_source 用，并行调用也不会撞号）。
+    """
     p = TaskPaths(task_id).tool_calls
     with task_lock(task_id):
-        seq = 1
-        if p.exists():
-            seq = sum(1 for _ in p.open(encoding="utf-8")) + 1
-        r = ToolCallRecord(seq=seq, **rec)
+        old = read_tool_calls(task_id)
+        if new_source_evidence:
+            n = sum(1 for r in old if r.tool == "read_source" and r.evidence_ids) + 1
+            rec = {**rec, "evidence_ids": [f"S{n}"]}
+        r = ToolCallRecord(seq=len(old) + 1, **rec)
         with p.open("a", encoding="utf-8") as f:
             f.write(r.model_dump_json() + "\n")
     return r
@@ -124,10 +129,12 @@ def append_tool_call(task_id: str, rec: dict) -> ToolCallRecord:
 
 def read_tool_calls(task_id: str, after: int = 0) -> list[ToolCallRecord]:
     p = TaskPaths(task_id).tool_calls
-    if not p.exists():
-        return []
+    with task_lock(task_id):  # 和追加互斥，不会读到写了一半的行
+        if not p.exists():
+            return []
+        lines = p.read_text(encoding="utf-8").splitlines()
     out = []
-    for line in p.read_text(encoding="utf-8").splitlines():
+    for line in lines:
         if line.strip():
             r = ToolCallRecord.model_validate_json(line)
             if r.seq > after:

@@ -21,7 +21,7 @@ paths:
           application/json:
             schema: {$ref: "#/components/schemas/ProjectRef"}
       responses:
-        "200": {description: 文件列表，或 {"error":{...}}}
+        "200": {description: 文件列表（出错时为 error 对象）}
   /tools/read_source:
     post:
       operationId: read_source
@@ -40,7 +40,7 @@ paths:
                 start_line: {type: integer, description: 起始行，默认 1}
                 end_line: {type: integer, description: 结束行，默认 200}
       responses:
-        "200": {description: 源码片段，或 {"error":{...}}}
+        "200": {description: 源码片段（出错时为 error 对象）}
   /tools/compile_project:
     post:
       operationId: compile_project
@@ -51,7 +51,7 @@ paths:
           application/json:
             schema: {$ref: "#/components/schemas/ProjectRef"}
       responses:
-        "200": {description: 编译结果，或 {"error":{...}}}
+        "200": {description: 编译结果（出错时为 error 对象）}
   /tools/run_kernel:
     post:
       operationId: run_kernel
@@ -62,7 +62,7 @@ paths:
           application/json:
             schema: {$ref: "#/components/schemas/ProjectRef"}
       responses:
-        "200": {description: 运行结果，或 {"error":{...}}}
+        "200": {description: 运行结果（出错时为 error 对象）}
   /tools/clang_scan:
     post:
       operationId: clang_scan
@@ -73,7 +73,7 @@ paths:
           application/json:
             schema: {$ref: "#/components/schemas/ProjectRef"}
       responses:
-        "200": {description: 扫描结果，或 {"error":{...}}}
+        "200": {description: 扫描结果（出错时为 error 对象）}
   /tools/diff_reference:
     post:
       operationId: diff_reference
@@ -84,7 +84,7 @@ paths:
           application/json:
             schema: {$ref: "#/components/schemas/ProjectRef"}
       responses:
-        "200": {description: 对比结果，或 {"error":{...}}}
+        "200": {description: 对比结果（出错时为 error 对象）}
 components:
   schemas:
     ProjectRef:

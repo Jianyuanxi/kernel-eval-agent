@@ -2,6 +2,7 @@
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Request
+from fastapi.exceptions import RequestValidationError
 
 from app import config
 from app.core import api, pipeline, storage, tools_api
@@ -37,3 +38,11 @@ def _api_error(request: Request, e: ApiError):
 @app.exception_handler(PipelineError)
 def _pipeline_error(request: Request, e: PipelineError):
     return error_response(ApiError(500, e.code, str(e)))
+
+
+@app.exception_handler(RequestValidationError)
+def _bad_request(request: Request, e: RequestValidationError):
+    """参数不合法：/api 返回 422，/tools 返回 200（让模型读到原因），body 都是标准 error 对象"""
+    msg = "；".join(f"{'.'.join(str(x) for x in err['loc'])}: {err['msg']}" for err in e.errors())[:500]
+    status = 200 if request.url.path.startswith("/tools/") else 422
+    return error_response(ApiError(status, "REQUEST_INVALID", f"请求参数不合法：{msg}"))

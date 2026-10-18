@@ -35,12 +35,14 @@ UNPACK_MAX_FILES = 5000
 TOOL_TOKEN = _env("TOOL_TOKEN", "dev-token")
 DIFY_API_BASE = _env("DIFY_API_BASE", "http://127.0.0.1:8080/v1")
 DIFY_APP_KEY = _env("DIFY_APP_KEY", "")
-AGENT_TIMEOUT_S = int(_env("AGENT_TIMEOUT_S", "420"))
+AGENT_TIMEOUT_S = int(_env("AGENT_TIMEOUT_S", "420"))  # 一次评审的总预算：首次、提醒、修正共用
+FOLLOWUP_TIMEOUT_S = int(_env("FOLLOWUP_TIMEOUT_S", "60"))  # 一次追问的总预算（验收目标 30 秒内回答）
 # 只用于写进报告；真正用哪个模型在 Dify 应用里选，两边要一致
 MODEL_NAME = _env("MODEL_NAME", "deepseek/deepseek-flash")
 
-# 用假数据顶替还没做好的模块，逗号分隔：ingest,buildrun,analyze,diff,agent,scoring；all 表示全部
-_mock = _env("MOCK_MODULES", "")
+# 用假数据顶替还没做好的模块，逗号分隔：ingest,buildrun,analyze,diff,agent,scoring；all 表示全部。
+# 不配置时默认 all（本机开箱能跑）；全部真实时显式写 KE_MOCK_MODULES= （空值）
+_mock = _env("MOCK_MODULES", "all")
 MOCK_MODULES = {"ingest", "buildrun", "analyze", "diff", "agent", "scoring"} if _mock.strip() == "all" else {
     m.strip() for m in _mock.split(",") if m.strip()}
 

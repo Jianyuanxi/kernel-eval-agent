@@ -166,18 +166,34 @@ def _zh(status: str) -> str:
 
 # ---------------- 智能体评审 ----------------
 
+TOOL_NAMES_ZH = {"knowledge": "知识库检索"}  # 写进提示词时用的名字；其余工具名原样给模型
+
+
 def required_tools(project: Project, build: BuildResult | None) -> list[str]:
     req = []
     if project.buildable:
         req.append("compile_project")
         if build and build.status == "passed":
             req.append("run_kernel")
-    req += ["clang_scan", "read_source"]
+    req += ["clang_scan", "read_source", "knowledge"]
     return req
 
 
 def _called_tools(task_id: str) -> set[str]:
-    return {r.tool for r in storage.read_tool_calls(task_id) if r.source == "agent"}
+    """智能体调过的工具。read_source 只算成功的（路径错误不算读过源码）；编译失败、扫描 unsupported 照样算调过"""
+    return {r.tool for r in storage.read_tool_calls(task_id)
+            if r.source == "agent" and (r.tool != "read_source" or r.status == "passed")}
+
+
+def _record_knowledge(task_id: str, thoughts: list[AgentThought]) -> None:
+    """知识库检索不经过我们的工具服务，从 agent_thought 里补记录（Dify 知识库工具名以 dataset_ 开头）"""
+    for t in thoughts:
+        if t.tool.startswith("dataset_"):
+            _record(task_id, "knowledge", "passed", time.monotonic(), f"检索知识库：{t.tool_input[:80]}", source="agent")
+
+
+def _zh_tools(names: list[str]) -> str:
+    return "、".join(TOOL_NAMES_ZH.get(n, n) for n in names)
 
 
 def parse_review(answer: str) -> ReviewResult:
@@ -202,23 +218,28 @@ def _agent_review(info: TaskInfo, paths: TaskPaths, project: Project, build: Bui
     query = prompts.render(
         "review_query", task_id=tid, project_id=project.project_id, project_name=project.name,
         mode="完整工程" if project.buildable else "代码片段", arch=project.arch, c_files=project.c_files,
-        required_tools="、".join(need))
+        required_tools=_zh_tools(need))
     thoughts: list[AgentThought] = []
+    deadline = time.monotonic() + config.AGENT_TIMEOUT_S  # 首次、提醒、修正共用一个总预算
+
+    def chat(text: str, conv: str = ""):
+        r = client.chat(text, user, conv, deadline=deadline)
+        thoughts.extend(r.thoughts)
+        _record_knowledge(tid, r.thoughts)
+        return r
+
     try:
-        res = client.chat(query, user)
-        thoughts += res.thoughts
+        res = chat(query)
         missing = [t for t in need if t not in _called_tools(tid)]
         if missing:
-            res = client.chat(prompts.render("nudge", missing="、".join(missing)), user, res.conversation_id)
-            thoughts += res.thoughts
+            res = chat(prompts.render("nudge", missing=_zh_tools(missing)), res.conversation_id)
             missing = [t for t in need if t not in _called_tools(tid)]
             if missing:
-                raise PipelineError("AGENT_SKIPPED_TOOLS", f"提醒后智能体仍未调用：{'、'.join(missing)}")
+                raise PipelineError("AGENT_SKIPPED_TOOLS", f"提醒后智能体仍未调用：{_zh_tools(missing)}")
         try:
             review = parse_review(res.answer)
         except (ValueError, ValidationError) as e:
-            res = client.chat(prompts.render("repair", errors=str(e)[:1500]), user, res.conversation_id)
-            thoughts += res.thoughts
+            res = chat(prompts.render("repair", errors=str(e)[:1500]), res.conversation_id)
             try:
                 review = parse_review(res.answer)
             except (ValueError, ValidationError) as e2:
@@ -226,9 +247,6 @@ def _agent_review(info: TaskInfo, paths: TaskPaths, project: Project, build: Bui
                 raise PipelineError("REVIEW_INVALID", f"智能体输出两次都不符合格式：{str(e2)[:300]}") from e2
     except DifyError as e:
         raise PipelineError(e.code, str(e)) from e
-    for t in thoughts:  # 知识库检索不经过我们的工具服务，从 agent_thought 里补记录
-        if t.tool.startswith("dataset_"):
-            _record(tid, "knowledge", "passed", time.monotonic(), f"检索知识库：{t.tool_input[:80]}", source="agent")
     return review, res.conversation_id, thoughts, config.MODEL_NAME
 
 
@@ -250,10 +268,26 @@ def _finalize_defects(task_id: str, review: ReviewResult, file_lines: dict[str, 
                       build, run, scan) -> tuple[list[ReportDefect], list[str]]:
     warnings: list[str] = []
     known = issued_evidence(task_id, build, run, scan, diff)
+
+    def ok(path: str, line: int) -> bool:
+        return 1 <= line <= file_lines.get(path, 0)
+
+    # 功能点、创新点：去掉不存在的位置和证据，判断本身保留（判断错不错由人看报告，位置必须真实，docs/06 S6）
+    for f in [*review.features, review.innovation]:
+        name = getattr(f, "feature_id", "innovation")
+        bad_loc = [loc for loc in f.locations if not ok(loc.path, loc.line)]
+        if bad_loc:
+            warnings.append(f"{name} 引用了不存在的位置 {[f'{x.path}:{x.line}' for x in bad_loc]}，已去掉")
+            f.locations = [loc for loc in f.locations if ok(loc.path, loc.line)]
+        ev = getattr(f, "evidence_ids", None)
+        if ev and any(e not in known for e in ev):
+            warnings.append(f"{name} 引用了不存在的证据 {[e for e in ev if e not in known]}，已去掉")
+            f.evidence_ids = [e for e in ev if e in known]
+
     seen: set[tuple[str, int, str]] = set()
     out: list[ReportDefect] = []
     for d in review.defects:
-        if d.path not in file_lines or d.line > max(file_lines[d.path], 1):
+        if not ok(d.path, d.line):
             warnings.append(f"丢弃缺陷“{d.title}”：{d.path}:{d.line} 不存在")
             continue
         key = (d.path, d.line, d.type)

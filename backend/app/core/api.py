@@ -46,12 +46,15 @@ def create_task(files: list[UploadFile] = File(...)):
     is_zip = len(files) == 1 and names[0].lower().endswith(".zip")
     if not is_zip and (len(files) > 50 or not all(n.lower().endswith((".c", ".h")) for n in names)):
         raise ApiError(400, "UPLOAD_BAD_TYPE", "只支持一个 .zip，或 1–50 个 .c/.h 文件")
+    bases = [n.replace("\\", "/").split("/")[-1] for n in names]
+    if len(set(bases)) != len(bases):
+        raise ApiError(400, "UPLOAD_BAD_TYPE", "零散上传不支持同名文件，请打成 zip 保留目录结构")
     tid = storage.new_task_id()
     paths = TaskPaths(tid)
     paths.upload.mkdir(parents=True)
     saved, total = [], 0
-    for f, n in zip(files, names):
-        dst = paths.upload / n.replace("\\", "/").split("/")[-1]
+    for f, n in zip(files, bases):
+        dst = paths.upload / n
         with dst.open("wb") as out:
             shutil.copyfileobj(f.file, out)
         total += dst.stat().st_size
@@ -145,7 +148,8 @@ def followup(task_id: str, req: FollowupRequest):
     if req.defect_index is not None and not 0 <= req.defect_index < len(rep.defects):
         raise ApiError(400, "PATH_INVALID", "defect_index 超出范围")
     try:
-        return pipeline._call(modules.get("followup").answer_followup, rep, req, DifyClient())
+        return pipeline._call(modules.get("followup").answer_followup, rep, req,
+                              DifyClient(timeout_s=config.FOLLOWUP_TIMEOUT_S))
     except DifyError as e:
         raise ApiError(502, e.code, str(e))
     except pipeline.PipelineError as e:

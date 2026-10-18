@@ -16,6 +16,7 @@ ErrorCode = Literal[
     "TASK_NOT_FOUND",
     "PROJECT_NOT_FOUND",
     "TASK_STATE_CONFLICT",   # 例如任务已在运行又调用 start
+    "REQUEST_INVALID",       # 请求参数不合法（缺字段、类型不对、行号 < 1 等）
     "PATH_INVALID",          # read_source 等传入了工程外或不存在的路径
     "TOOL_TOKEN_INVALID",
     "RESULT_NOT_READY",      # 工具被调用时对应结果还没生成

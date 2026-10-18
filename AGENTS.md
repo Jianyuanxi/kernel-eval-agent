@@ -38,11 +38,11 @@ python -m pytest -q
 ```
 
 - 自己的测试放 `backend/tests/<模块名>/`。
-- 需要 Docker 的测试：`@pytest.mark.skipif(shutil.which("docker") is None, reason="需要 Docker")`。
+- 需要 Docker 的测试加 `@pytest.mark.sandbox`：`tests/conftest.py` 会检查 docker 命令、守护进程和沙箱镜像，缺一个就跳过（CI、Windows 上自动跳过）。在服务器上跑时加 `KE_REQUIRE_SANDBOX=1`，沙箱不可用直接报错，不允许“跳过了就算通过”。
 - 需要样例的测试：从 `app.config.SAMPLES_ROOT` 找，找不到 `pytest.skip`。
 - **改完要真的跑测试，看到通过再说做完了**；跑不了（比如本机没 Docker）就明说哪些没跑。
 
-本地联调：把 `deploy/env.example` 复制成 `backend/.env`，用 `KE_MOCK_MODULES` 让别人还没做好的模块用假数据（例如块 2 用 `KE_MOCK_MODULES=buildrun,analyze,agent,scoring`），然后 `cd backend && python -m uvicorn app.main:app --reload --port 8000`，打开 <http://127.0.0.1:8000/docs>。
+本地联调：不建 `.env` 时默认全部假数据。要换成自己的真实模块，把 `deploy/env.example` 复制成 `backend/.env`，**删掉开头 3 行服务器路径**，用 `KE_MOCK_MODULES` 让别人还没做好的模块用假数据（例如块 2 用 `KE_MOCK_MODULES=buildrun,analyze,agent,scoring`），然后 `cd backend && python -m uvicorn app.main:app --reload --port 8000`，打开 <http://127.0.0.1:8000/docs>。
 
 ## 服务器
 

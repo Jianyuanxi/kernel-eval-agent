@@ -8,7 +8,7 @@ import zipfile
 from pathlib import Path
 from types import SimpleNamespace
 
-from app.config import EXAMPLES_DIR
+from app.config import EXAMPLES_DIR, UNPACK_MAX_BYTES, UNPACK_MAX_FILES
 from app.schemas import (
     BuildResult, DiffResult, FileList, FollowupResponse, IngestResult, Report, ReviewResult, RunResult,
     ScanResult, ScoreResult, SourceSlice,
@@ -19,30 +19,58 @@ def example(name: str):
     return json.loads((EXAMPLES_DIR / f"{name}.json").read_text(encoding="utf-8"))
 
 
+def _inside(base: Path, rel: str) -> Path | None:
+    """rel 拼到 base 下并 resolve，落在 base 之外（绝对路径、..、盘符）返回 None"""
+    if not rel or rel.startswith(("/", "\\")) or ":" in rel:
+        return None
+    p = (base / rel.replace("\\", "/")).resolve()
+    return p if p.is_relative_to(base.resolve()) else None
+
+
 def _ingest_upload(task_dir: Path, upload_paths: list[Path], upload_name: str) -> IngestResult:
     """工程信息固定用示例；但会把上传内容粗略放进 projects/p1/，这样上传样例 1 时智能体能读到真实源码。
-    不做安全检查和工程识别（那是块 2 的活），只在开发期用。"""
+    不做过滤和工程识别（那是块 2 的活），只在开发期用；但路径越界和解压上限是真检查（公网部署也跑这段）。"""
     r = IngestResult.model_validate(example("ingest_result"))
     r.upload_name = upload_name
     dst = task_dir / "projects" / r.projects[0].project_id
     dst.mkdir(parents=True, exist_ok=True)
+
+    def fail(code: str, msg: str) -> IngestResult:
+        return IngestResult(status="failed", upload_name=upload_name, error={"code": code, "message": msg})
+
     for up in upload_paths:
-        if up.suffix.lower() == ".zip":
-            with zipfile.ZipFile(up) as z:
-                names = [n for n in z.namelist() if not n.endswith("/") and ".." not in n and not n.startswith("/")]
-                tops = {n.split("/")[0] for n in names}
-                strip = len(tops) == 1 and all("/" in n for n in names)
-                for n in names:
-                    rel = n.split("/", 1)[1] if strip else n
-                    (dst / rel).parent.mkdir(parents=True, exist_ok=True)
-                    (dst / rel).write_bytes(z.read(n))
-        else:
+        if up.suffix.lower() != ".zip":
             shutil.copy(up, dst / up.name)
+            continue
+        try:
+            with zipfile.ZipFile(up) as z:
+                infos = [i for i in z.infolist() if not i.is_dir()]
+                if len(infos) > UNPACK_MAX_FILES:
+                    return fail("UPLOAD_TOO_LARGE", f"zip 里超过 {UNPACK_MAX_FILES} 个文件")
+                tops = {i.filename.split("/")[0] for i in infos}
+                strip = len(tops) == 1 and all("/" in i.filename for i in infos)
+                total = 0
+                for i in infos:
+                    rel = i.filename.split("/", 1)[1] if strip else i.filename
+                    out = _inside(dst, rel)
+                    if out is None or (i.external_attr >> 16) & 0o170000 == 0o120000:  # 越界或符号链接
+                        return fail("UPLOAD_UNSAFE_PATH", f"zip 里有不安全的路径：{i.filename}")
+                    total += i.file_size  # zipfile 读到声明的大小就停，所以先按声明累计
+                    if total > UNPACK_MAX_BYTES:
+                        return fail("UPLOAD_TOO_LARGE", "解压后超过 100MB")
+                    data = z.read(i)
+                    out.parent.mkdir(parents=True, exist_ok=True)
+                    out.write_bytes(data)
+        except (zipfile.BadZipFile, RuntimeError) as e:  # RuntimeError：加密 zip
+            return fail("UPLOAD_BAD_ZIP", f"zip 损坏或加密：{e}")
     return r
 
 
 def _lines(p: Path) -> list[str]:
-    return p.read_text(encoding="utf-8", errors="replace").replace("\r\n", "\n").split("\n")
+    """按 docs/02 第 1 节的行数规则：\\r\\n 算一个换行，最后一行没换行也算，空文件 0 行"""
+    text = p.read_text(encoding="utf-8", errors="replace").replace("\r\n", "\n")
+    lines = text.split("\n")
+    return lines[:-1] if text.endswith("\n") or not text else lines
 
 
 def _list_files(project_dir: Path, project_id: str) -> FileList:
@@ -56,12 +84,17 @@ def _list_files(project_dir: Path, project_id: str) -> FileList:
 
 
 def _read_source(project_dir: Path, path: str, start_line: int, end_line: int) -> SourceSlice:
-    f = project_dir / path
-    if not f.is_file():
-        s = SourceSlice.model_validate(example("source_slice"))
-        s.path = path
-        return s
+    """越界、不存在、二进制都抛 PathInvalidError（和块 2 的真实实现一致）"""
+    from app.ingest import PathInvalidError
+    f = _inside(project_dir, path)
+    if f is None or not f.is_file():
+        raise PathInvalidError(f"工程里没有文件 {path}")
+    if b"\x00" in f.read_bytes():
+        raise PathInvalidError(f"{path} 不是文本文件")
     lines = _lines(f)
+    start_line = max(start_line, 1)
+    if start_line > len(lines):
+        raise PathInvalidError(f"{path} 只有 {len(lines)} 行")
     end = min(end_line, len(lines), start_line + 199)
     return SourceSlice(path=path, start_line=start_line, end_line=end, total_lines=len(lines),
                        text="\n".join(f"{i:>5} | {lines[i - 1]}" for i in range(start_line, end + 1)))

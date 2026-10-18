@@ -7,10 +7,11 @@
 """
 import time
 
-from fastapi import APIRouter, Depends, Header, HTTPException
+from fastapi import APIRouter, Depends, Header
 
 from app import config
 from app.core import modules, storage
+from app.core.api import ApiError
 from app.core.storage import TaskPaths, now_iso
 from app.schemas import (
     BuildResult, DiffResult, ProjectRef, ReadSourceRequest, RunResult, ScanResult,
@@ -21,7 +22,7 @@ router = APIRouter(prefix="/tools", tags=["tools"])
 
 def _check_token(x_tool_token: str = Header("")) -> None:
     if x_tool_token != config.TOOL_TOKEN:
-        raise HTTPException(401, detail={"error": {"code": "TOOL_TOKEN_INVALID", "message": "工具令牌不对"}})
+        raise ApiError(401, "TOOL_TOKEN_INVALID", "工具令牌不对")
 
 
 def _err(code: str, message: str) -> dict:
@@ -37,11 +38,12 @@ def _ctx(ref: ProjectRef):
     return (info, TaskPaths(ref.task_id, ref.project_id)), None
 
 
-def _log(info, tool: str, inp: dict, status: str, t0: float, summary: str, ev: list[str] | None = None) -> None:
-    storage.append_tool_call(info.task_id, {
+def _log(info, tool: str, inp: dict, status: str, t0: float, summary: str, ev: list[str] | None = None,
+         new_source_evidence: bool = False):
+    return storage.append_tool_call(info.task_id, {
         "source": "followup" if info.stage == "done" else "agent", "tool": tool, "input": inp,
         "status": status, "started_at": now_iso(), "duration_ms": int((time.monotonic() - t0) * 1000),
-        "summary": summary, "evidence_ids": ev or []})
+        "summary": summary, "evidence_ids": ev or []}, new_source_evidence)
 
 
 def _stored(ref: ProjectRef, tool: str, name: str, cls, shrink, summarize):
@@ -87,10 +89,9 @@ def read_source(req: ReadSourceRequest):
     except PathInvalidError as e:
         _log(info, "read_source", req.model_dump(), "error", t0, f"路径无效：{req.path}")
         return _err("PATH_INVALID", str(e))
-    n = sum(1 for r in storage.read_tool_calls(info.task_id) if r.tool == "read_source" and r.evidence_ids) + 1
-    s.evidence_id = f"S{n}"
-    _log(info, "read_source", req.model_dump(), "passed", t0, f"读取 {s.path} 第 {s.start_line}–{s.end_line} 行",
-         [s.evidence_id])
+    rec = _log(info, "read_source", req.model_dump(), "passed", t0, f"读取 {s.path} 第 {s.start_line}–{s.end_line} 行",
+               new_source_evidence=True)
+    s.evidence_id = rec.evidence_ids[0]
     return s.model_dump()
 
 
