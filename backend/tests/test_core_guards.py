@@ -121,3 +121,27 @@ def test_required_tools_need_successful_read_and_knowledge():
     assert "read_source" not in called and "compile_project" in called
     proj = Project.model_validate(mocks.example("ingest_result")["projects"][0])
     assert "knowledge" in pipeline.required_tools(proj, None)
+
+
+def test_dify_deadline_without_newlines():
+    """对方一直发数据但不发换行，也要按截止时间停下。"""
+    import time
+
+    from app.core.dify_client import DifyClient, DifyError
+
+    class Endless:
+        def iter_text(self):
+            while True:
+                yield "x"
+
+    with pytest.raises(DifyError) as e:
+        list(DifyClient(app_key="k")._lines(Endless(), time.monotonic() + 0.2))
+    assert e.value.code == "AGENT_TIMEOUT"
+
+    class Two:
+        def iter_text(self):
+            yield "data: {\"a\"\r\n"
+            yield ": 1}\ndata: {}"
+
+    lines = list(DifyClient(app_key="k")._lines(Two(), time.monotonic() + 5))
+    assert lines == ['data: {"a"', ': 1}', 'data: {}']

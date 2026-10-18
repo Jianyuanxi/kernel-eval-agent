@@ -54,13 +54,12 @@ class DifyClient:
         thoughts: dict[str, AgentThought] = {}
         conv, msg_id = conversation_id, ""
         try:
-            timeout = httpx.Timeout(remaining, connect=min(10, remaining))
+            # Dify 流式每 10 秒发一次 ping，单次读超过 30 秒没数据就当断了；所以最多超出预算 30 秒
+            timeout = httpx.Timeout(min(30, remaining), connect=min(10, remaining))
             with httpx.stream("POST", f"{self.api_base}/chat-messages", json=body, headers=headers, timeout=timeout) as r:
                 if r.status_code != 200:
                     raise DifyError("AGENT_ERROR", f"Dify 返回 HTTP {r.status_code}：{r.read().decode(errors='replace')[:300]}")
-                for line in r.iter_lines():
-                    if time.monotonic() > deadline:
-                        raise DifyError("AGENT_TIMEOUT", f"智能体超过 {self.timeout_s} 秒的时间预算还没答完")
+                for line in self._lines(r, deadline):
                     if not line.startswith("data:"):
                         continue
                     ev = json.loads(line[5:].strip() or "{}")
@@ -85,3 +84,16 @@ class DifyClient:
             raise DifyError("AGENT_ERROR", f"连不上 Dify：{e}") from e
         return ChatResult(answer="".join(answer), conversation_id=conv, message_id=msg_id,
                           thoughts=sorted(thoughts.values(), key=lambda t: t.position))
+
+    def _lines(self, r: httpx.Response, deadline: float):
+        """按块读流、自己切行，每收到一块就检查截止时间（不依赖对方发换行）。"""
+        buf = ""
+        for chunk in r.iter_text():
+            if time.monotonic() > deadline:
+                raise DifyError("AGENT_TIMEOUT", f"智能体超过 {self.timeout_s} 秒的时间预算还没答完")
+            buf += chunk
+            *lines, buf = buf.split("\n")
+            for line in lines:
+                yield line.rstrip("\r")
+        if buf:
+            yield buf.rstrip("\r")
