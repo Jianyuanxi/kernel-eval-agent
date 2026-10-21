@@ -52,12 +52,17 @@ python -m pytest -q
 - 不要动 `/opt/kernel-eval/`、`/opt/dify/`；`/data/kernel-eval/` 只读（块 4 的 `evaluation/` 子目录除外）；不要重启 docker、不要 `apt upgrade`
 - 服务器连不上 GitHub，代码靠 devsync / deploy 脚本从本地推过去
 
-## 提交与分支
+## 工作流程（你自己执行，不用等用户提醒）
 
-- 分支 `blockN-简短英文`，PR 合进 main，CI（pytest）必须绿
-- Conventional Commits，类型英文、描述中文：`feat: 实现 zip 解压与工程识别`
-- PR 描述写做了什么、怎么测的（命令和结果）
+任务说明最后的“阶段”按顺序做。阶段不绑定日期：用户时间多可以一次连着做完几个阶段，但**每个阶段做完都要单独提交、推送、提 PR**，不要攒成一个大 PR。
 
-## 踩坑记录
+1. **开工前同步**：`git fetch origin`；在 main 上就 `git pull --ff-only`；在自己分支上就 `git rebase origin/main`（有冲突先告诉用户冲突在哪，不要擅自取舍别人的代码）。
+2. **建分支**：不在 main 上直接改。没有分支就建 `blockN-简短英文`（例如 `block2-ingest`）。
+3. **小步提交**：每做完一个能跑通测试的小功能就 commit。Conventional Commits，类型英文、描述中文：`feat: 实现 zip 解压与工程识别`。`git add` 前看 `git status`，只加自己块目录里的文件。
+4. **及时推送**：每次 commit 后、每次结束工作前都 `git push -u origin <分支>`。推送前跑一遍测试；推送前 `git diff origin/main` 检查没有密钥、样例代码、往届学生姓名学号。
+5. **阶段做完就提 PR**：测试全过后提 PR 合进 main。装了 `gh` 就 `gh pr create --base main`；没装就把 push 输出里的 PR 链接给用户，请他点开提交。PR 描述写：完成了哪个阶段、做了什么、怎么测的（命令和结果）、还没做什么。CI 必须绿，由块 1 审核合并。
+6. **PR 合并后**：切回 main 拉最新，下一个阶段从新的 main 再开分支（或在原分支 rebase 后继续）。
+7. **记踩坑**：遇到的问题和解决办法随手写进自己块的 `NOTES.md`（块 5 是 `agent/NOTES.md`，块 6 是 `frontend/NOTES.md`，块 1 是 `deploy/NOTES.md`），和代码一起提交。项目最后的 Word 指导书从这里汇总。
+8. **每次结束时给用户一段进度**：3～5 行，写完成了什么、PR 链接或状态、卡在哪、下一步做什么，用户直接转发到群里。
 
-在自己块的目录维护 `NOTES.md`（块 5 是 `agent/NOTES.md`，块 6 是 `frontend/NOTES.md`，块 1 是 `deploy/NOTES.md`），遇到问题和解决办法随手记。
+遇到下面的情况停下来告诉用户，不要自己绕过去：接口或 schemas 不够用、需要改别人块的目录、要加新依赖、测试在本机跑不了、冻结签名看起来有问题。

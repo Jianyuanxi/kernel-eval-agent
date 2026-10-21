@@ -1,7 +1,7 @@
 """Dify chat-messages 流式客户端（旧式 Agent 应用）。
 
 按 Dify 1.17.1 的事件定义写成：agent_thought（按 id 合并）、agent_message/message（答案分片）、
-message_end（拿 conversation_id）、error。块 1 第 1 周用真实应用联调确认，接口不变。
+message_end（拿 conversation_id）、error。块 1 在阶段 1 关卡用真实应用联调确认，接口不变。
 """
 import json
 import time
