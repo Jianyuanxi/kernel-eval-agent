@@ -7,27 +7,8 @@ from pathlib import Path
 from app.schemas import DiffResult, FileList, IngestResult, Project, SourceSlice
 
 
-class PathInvalidError(ValueError):
-    """路径在工程外、不存在或不是文本文件。块 1 捕获后返回 PATH_INVALID"""
-
-
-def ingest_upload(task_dir: Path, upload_paths: list[Path], upload_name: str) -> IngestResult:
-    """整理上传文件。
-
-    upload_paths：已保存在 task_dir/upload/ 下的文件（一个 zip，或 1–50 个 .c/.h）。
-    产出：task_dir/unpacked/（过滤后的全部文件）、task_dir/projects/{project_id}/（每个工程一份拷贝）。
-    失败时返回 status="failed" 和 error，不抛异常。
-    """
-    raise NotImplementedError
-
-
-def list_files(project_dir: Path, project_id: str) -> FileList:
-    raise NotImplementedError
-
-
-def read_source(project_dir: Path, path: str, start_line: int, end_line: int) -> SourceSlice:
-    """返回带行号的源码片段，一次最多 200 行；越界时截到文件末尾。路径非法抛 PathInvalidError"""
-    raise NotImplementedError
+from .source import PathInvalidError, list_files, read_source
+from .upload import ingest_upload
 
 
 def diff_reference(project: Project, project_dir: Path, ref_root: Path) -> DiffResult:
