@@ -145,3 +145,11 @@ def test_dify_deadline_without_newlines():
 
     lines = list(DifyClient(app_key="k")._lines(Two(), time.monotonic() + 5))
     assert lines == ['data: {"a"', ': 1}', 'data: {}']
+
+
+def test_dify_strip_think():
+    """推理模型的 <think> 段不进答案，否则追问会显示思考过程、评测 JSON 可能取错。"""
+    from app.core.dify_client import strip_think
+
+    assert strip_think("<think>\n先看 {x}\n</think>\n答案 {\"a\": 1}") == "答案 {\"a\": 1}"
+    assert strip_think("没有思考段") == "没有思考段"

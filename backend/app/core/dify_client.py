@@ -4,6 +4,7 @@
 message_end（拿 conversation_id）、error。块 1 在阶段 1 关卡用真实应用联调确认，接口不变。
 """
 import json
+import re
 import time
 from dataclasses import dataclass, field
 from typing import Callable
@@ -12,6 +13,14 @@ import httpx
 
 from app.config import AGENT_TIMEOUT_S, DIFY_API_BASE, DIFY_APP_KEY
 from app.schemas import AgentThought
+
+# DeepSeek 等推理模型会把思考过程以 <think>…</think> 放在答案开头，评测解析和追问展示都不要它
+_THINK = re.compile(r"<think>.*?</think>\s*", re.S)
+
+
+def strip_think(answer: str) -> str:
+    """去掉答案里的 <think>…</think> 思考段。"""
+    return _THINK.sub("", answer)
 
 
 class DifyError(RuntimeError):
@@ -82,7 +91,7 @@ class DifyClient:
             raise DifyError("AGENT_TIMEOUT", f"Dify 超过 {self.timeout_s} 秒没有完成：{e}") from e
         except httpx.HTTPError as e:
             raise DifyError("AGENT_ERROR", f"连不上 Dify：{e}") from e
-        return ChatResult(answer="".join(answer), conversation_id=conv, message_id=msg_id,
+        return ChatResult(answer=strip_think("".join(answer)), conversation_id=conv, message_id=msg_id,
                           thoughts=sorted(thoughts.values(), key=lambda t: t.position))
 
     def _lines(self, r: httpx.Response, deadline: float):
