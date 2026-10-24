@@ -7,6 +7,10 @@
 - Dify 客户端：报告里 agent_thought、工具名、knowledge 都解析正确，说明 `core/dify_client.py` 的事件字段和 Dify 1.17.1 一致。
 - 追问：用报告里的 conversation_id 和 `user=task-<任务号>` 直接调 `http://127.0.0.1:8080/v1/chat-messages`（streaming）再问一句，能接着上下文答出 shmsg.c:96，message_end 的 conversation_id 不变。
 
+## 切真实模块记录
+
+- 2026-10-24 切 ingest（块 2 阶段 1，PR #3，部署 d270701）：`KE_MOCK_MODULES=buildrun,analyze,diff,scoring`，改前 env 备份为 `kernel-eval.env.bak-20261024`。四份样例上传：样例 1 为 1 个工程（50 文件/15 个 C），样例 2 为 11 个工程，样例 3 为 1 个片段（riscv64，不可编译），样例 4 为 1 个工程（61/19），全部 aarch64 完整工程可编译。样例 1 完整跑到 done，79 分，warnings 空，agent 调了全部 6 个工具和 knowledge。diff 等块 2 阶段 2 再切。
+
 ## 踩坑
 
 1. **TokenHub 免费额度会用完**：每个模型单独领免费额度，用完后调用返回 402「免费体验额度已耗尽」，Dify 对话直接失败。要在腾讯云控制台 TokenHub → 启用管理 → 对应模型打开「按 Token 计费」（从账户余额扣，余额不足会报欠费）。deepseek-flash 已于 2026-10-22 开通，对应 DeepSeek-V4.1-Flash-1017，闲时输入 1 元、输出 4 元每百万 tokens，高峰翻倍。
