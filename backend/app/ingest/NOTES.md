@@ -17,3 +17,26 @@
 
 - 阶段 1 PR 需块 1 审核合并；不由块 2 合并。
 - 服务器真实模式上传验收尚未进行，需要块 1 完成集成后协同验证。
+
+## 阶段 2（2026-10-24）
+
+- 实现参考 lab 路径交集匹配，按实验编号数值处理并列；lab10 优先于 lab8，不依赖目录枚举顺序。
+- 比较前移除 CR、行尾空白和末尾空行；保留行首空白和中间空行。使用 SequenceMatcher 的 autojunk=False，学生侧 insert/replace 形成闭区间，参考侧 delete/replace 计入 removed_lines。
+- 只删除内容时 hunks 为空；新增空文件仍是 added，但 added_lines=0、hunks=[]，避免违反 LineRange 的正行号约束。
+- 按文本比较要求，学生侧或参考侧含 NUL 的文件不进入 files，note 报告跳过数；这些文件仍参与同路径基线统计，change_flags 对它们返回未知，不能误判为基线未变。
+- 只给 added/modified 按路径排序分配 D1、D2 等证据；same 的编号为空。change_flags 直接使用闭区间，不把文件的未修改行算作修改行。
+- 样例 1 完整输出与 contracts/examples/diff_result.json 逐字段相等：lab10，相同 14、修改 26、新增 10；src/main.c 第 56–57 行均被标为学生改动。
+- 样例 4：lab10，相同 49、修改 9、新增 3。样例 3：unsupported，无异常。
+- 真实 ingest/diff 的四份样例通过上传、启动评测、报告和工具接口验证；其余模块保持 mock，不代表编译、模型或服务器已验收。
+- 公共 tests/conftest.py 会把 DATA_ROOT 指向临时目录，连带改变默认 REF_ROOT。要运行本地参考样例测试，必须显式设 KE_REF_ROOT；否则会按缺少参考代码跳过。PowerShell 在仓库根目录运行：
+
+  ```powershell
+  $env:KE_REF_ROOT = (Resolve-Path backend/data/ref/os2024_exp_redo_kp).Path
+  backend/.venv/Scripts/python -m pytest -q backend/tests
+  ```
+
+- 本地结果：140 passed, 1 warning in 29.34s；所有样例测试均运行，无 skip。
+
+### 集成交接
+
+请块 1 合并阶段 2 后部署，并将 KE_MOCK_MODULES 中的 ingest、diff 同时移除（其他模块按各自完成度决定），确保 KE_REF_ROOT 指向已准备好的参考代码。随后上传四份样例确认工程数为 1/11/1/1，样例 1、4 的差异数字如上。块 2 不修改 /opt/kernel-eval 的代码、配置或服务；服务器验收尚待配合。

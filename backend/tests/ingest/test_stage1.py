@@ -274,3 +274,42 @@ def test_read_resolved_escape(tmp_path, monkeypatch):
     monkeypatch.setattr(Path, "resolve", lambda self, **kw: outside if self == target else original(self, **kw))
     with pytest.raises(PathInvalidError):
         read_source(tmp_path, "link.c", 1, 20)
+
+
+def test_pipeline_with_real_ingest_and_diff(sample_archive, monkeypatch):
+    """四份样例走真实整理和对比，验证报告落盘及差异工具返回。"""
+    from app.core import pipeline, storage
+    from app.schemas import DiffResult
+    if not config.REF_ROOT.is_dir():
+        pytest.skip("本地未配置参考代码")
+    number, archive = sample_archive
+    monkeypatch.setattr(config, "MOCK_MODULES", {"buildrun", "analyze", "agent", "scoring"})
+    # 同步运行真实流水线，避免此测试留下后台队列任务。
+    monkeypatch.setattr(pipeline, "submit", pipeline.run_pipeline)
+    client = TestClient(app)
+    response = client.post("/api/tasks", files={"files": (archive.name, archive.read_bytes(), "application/zip")})
+    assert response.status_code == 200
+    info = response.json()
+    tid, pid = info["task_id"], info["projects"][0]["project_id"]
+    started = client.post(f"/api/tasks/{tid}/start", json={"project_id": pid})
+    assert started.status_code == 200
+    task = client.get(f"/api/tasks/{tid}").json()
+    assert task["stage"] == "done", task.get("error")
+    response = client.get(f"/api/tasks/{tid}/report")
+    assert response.status_code == 200
+    report = response.json()
+    diff = report["diff"]
+    saved = storage.read_model(storage.TaskPaths(tid, pid).result("diff"), DiffResult)
+    assert saved.model_dump() == diff
+    if number == 3:
+        assert diff["status"] == "unsupported"
+    else:
+        assert diff["status"] == "passed"
+    if number in (1, 4):
+        assert (diff["same"], diff["modified"], diff["added"]) == ((14, 26, 10) if number == 1 else (49, 9, 3))
+    tool = client.post("/tools/diff_reference", headers={"X-Tool-Token": config.TOOL_TOKEN},
+                       json={"task_id": tid, "project_id": pid})
+    assert tool.status_code == 200
+    assert tool.json()["baseline"] == diff["baseline"]
+    assert tool.json()["modified"] == diff["modified"]
+    assert all(f["change"] != "same" for f in tool.json()["files"])
