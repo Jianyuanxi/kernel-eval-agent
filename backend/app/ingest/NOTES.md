@@ -40,3 +40,12 @@
 ### 集成交接
 
 请块 1 合并阶段 2 后部署，并将 KE_MOCK_MODULES 中的 ingest、diff 同时移除（其他模块按各自完成度决定），确保 KE_REF_ROOT 指向已准备好的参考代码。随后上传四份样例确认工程数为 1/11/1/1，样例 1、4 的差异数字如上。块 2 不修改 /opt/kernel-eval 的代码、配置或服务；服务器验收尚待配合。
+
+### Linux 开发目录验证
+
+- 开发目录：~/dev/Liu/。2026-10-24 通过 SSH 在组内服务器运行全量测试：140 passed, 1 warning in 4.72s，无 skip。
+- 使用 /opt/kernel-eval/venv/bin/python，KE_REF_ROOT=/data/kernel-eval/ref/os2024_exp_redo_kp、KE_SAMPLES_ROOT=/data/kernel-eval/samples；运行数据及临时文件均放 ~/dev/Liu/ 内。
+- 四份样例的真实 ingest/diff API 流水线测试均通过。这里使用 FastAPI TestClient，不是生产网站端到端验收；编译、扫描、智能体和评分保持 mock。
+- 生产健康检查显示 mock_modules 包含 analyze、buildrun、diff、scoring，ingest 已为真实模块；diff 的部署切换仍由块 1 处理。
+- Windows 私钥 ACL 中出现一条额外 SID 权限时，OpenSSH 会拒绝私钥。仅移除该额外权限后连接成功，没有输出密钥内容。
+- deploy/devsync.sh 会删除整个目标开发目录；本次确认 ~/dev/Liu 尚不存在后，使用 git archive 打包已提交代码并传入该目录解压，未调用脚本的递归删除步骤，未上传样例、密钥或本地运行数据。
