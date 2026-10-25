@@ -5,6 +5,8 @@
 from pathlib import Path
 
 from app.schemas import BuildResult, Project, RunResult
+from .compiler import build as _build
+from .runner import run as _run
 
 
 def build(project: Project, project_dir: Path, work_dir: Path, log_dir: Path) -> BuildResult:
@@ -13,7 +15,7 @@ def build(project: Project, project_dir: Path, work_dir: Path, log_dir: Path) ->
     work_dir 挂载为容器内 /workspace；产物和 compile_commands.json 留在 work_dir/build/ 供 run 使用。
     完整日志写 log_dir/build.log。project.buildable 为 false 时返回 status="unsupported"。
     """
-    raise NotImplementedError
+    return _build(project, project_dir, work_dir, log_dir)
 
 
 def run(project: Project, work_dir: Path, build_result: BuildResult, log_dir: Path) -> RunResult:
@@ -21,4 +23,4 @@ def run(project: Project, work_dir: Path, build_result: BuildResult, log_dir: Pa
 
     build_result.status != "passed" 时直接返回 status="skipped"。完整串口输出写 log_dir/run.log。
     """
-    raise NotImplementedError
+    return _run(project, work_dir, build_result, log_dir)
