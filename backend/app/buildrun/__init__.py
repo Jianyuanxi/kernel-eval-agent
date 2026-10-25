@@ -6,6 +6,7 @@ from pathlib import Path
 
 from app.schemas import BuildResult, Project, RunResult
 from .compiler import build as _build
+from .runner import run as _run
 
 
 def build(project: Project, project_dir: Path, work_dir: Path, log_dir: Path) -> BuildResult:
@@ -22,4 +23,4 @@ def run(project: Project, work_dir: Path, build_result: BuildResult, log_dir: Pa
 
     build_result.status != "passed" 时直接返回 status="skipped"。完整串口输出写 log_dir/run.log。
     """
-    raise NotImplementedError
+    return _run(project, work_dir, build_result, log_dir)
