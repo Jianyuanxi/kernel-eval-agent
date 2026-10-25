@@ -5,6 +5,7 @@
 from pathlib import Path
 
 from app.schemas import BuildResult, Project, RunResult
+from .compiler import build as _build
 
 
 def build(project: Project, project_dir: Path, work_dir: Path, log_dir: Path) -> BuildResult:
@@ -13,7 +14,7 @@ def build(project: Project, project_dir: Path, work_dir: Path, log_dir: Path) ->
     work_dir 挂载为容器内 /workspace；产物和 compile_commands.json 留在 work_dir/build/ 供 run 使用。
     完整日志写 log_dir/build.log。project.buildable 为 false 时返回 status="unsupported"。
     """
-    raise NotImplementedError
+    return _build(project, project_dir, work_dir, log_dir)
 
 
 def run(project: Project, work_dir: Path, build_result: BuildResult, log_dir: Path) -> RunResult:
