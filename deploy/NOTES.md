@@ -10,6 +10,8 @@
 ## 切真实模块记录
 
 - 2026-10-24 切 ingest（块 2 阶段 1，PR #3，部署 d270701）：`KE_MOCK_MODULES=buildrun,analyze,diff,scoring`，改前 env 备份为 `kernel-eval.env.bak-20261024`。四份样例上传：样例 1 为 1 个工程（50 文件/15 个 C），样例 2 为 11 个工程，样例 3 为 1 个片段（riscv64，不可编译），样例 4 为 1 个工程（61/19），全部 aarch64 完整工程可编译。样例 1 完整跑到 done，79 分，warnings 空，agent 调了全部 6 个工具和 knowledge。diff 等块 2 阶段 2 再切。
+- 2026-10-25 切 diff（块 2 阶段 2，PR #4）和 buildrun（块 3，PR #5），部署 23a4018：`KE_MOCK_MODULES=analyze,scoring`，改前备份 `kernel-eval.env.bak-20261025`。合并前把两个 PR 合在一起，在服务器用真实沙箱、四份样例、参考代码跑全量后端测试（`KE_REQUIRE_SANDBOX=1`）：202 passed，0 skipped。生产验收：样例 1 编译通过（2 警告、0 错误，产物 `build/miniEuler`），运行出提示符并完成 top/tick 交互（约 20 秒），对比基线 lab10、相同 14 / 修改 26 / 新增 10，和契约示例一致；完整跑到 done，79 分，warnings 空。lab6_pro 两种表现（正常完成 / EXC_STORM）见块 3 的 NOTES，生产上未单独跑。
+- 正式服务以 `ubuntu` 用户运行、在 docker 组里；块 3 加固后的沙箱拒绝 root 运行，以后不要把服务改成 root。
 
 ## 踩坑
 
