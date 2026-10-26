@@ -47,11 +47,18 @@ def _unpack(uploads: list[Path], destination: Path) -> int:
     """边读取边累计所有文件的字节数，过滤文件也受总量限制。"""
     total = count = ignored = 0
     seen: set[str] = set()
+    spellings: dict[str, str] = {}
 
     def store(name: str, stream, size: int) -> None:
         """流式读取一个条目，超限立即停止，最多暂存 1MB。"""
         nonlocal total, count, ignored
         relative = relative_path(name)
+        for length in range(1, len(relative.parts) + 1):
+            prefix = "/".join(relative.parts[:length])
+            folded = prefix.casefold()
+            if folded in spellings and spellings[folded] != prefix:
+                raise PathInvalidError("上传含大小写冲突的目录或文件")
+            spellings[folded] = prefix
         key = relative.as_posix().casefold()
         if (key in seen or any(key.startswith(existing + "/") or existing.startswith(key + "/")
                                for existing in seen)):
