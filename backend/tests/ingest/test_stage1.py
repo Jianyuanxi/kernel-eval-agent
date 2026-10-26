@@ -313,3 +313,25 @@ def test_pipeline_with_real_ingest_and_diff(sample_archive, monkeypatch):
     assert tool.json()["baseline"] == diff["baseline"]
     assert tool.json()["modified"] == diff["modified"]
     assert all(f["change"] != "same" for f in tool.json()["files"])
+
+
+@pytest.mark.parametrize("entries", [
+    {"Demo/a.c": "x", "demo/b.h": "y"},
+    {"src/Lib/a.c": "x", "src/lib/b.c": "y"},
+])
+def test_parent_case_collision(tmp_path, entries):
+    """父目录大小写冲突不能在 Windows 上静默合并。"""
+    _, result = ingest(tmp_path, entries)
+    assert result.status == "failed"
+    assert result.error.code == "UPLOAD_UNSAFE_PATH"
+
+
+@pytest.mark.parametrize("failure", [PermissionError, RuntimeError])
+def test_source_resolution_failure(tmp_path, monkeypatch, failure):
+    """解析权限失败或链接循环统一转换为路径异常。"""
+    def fail(self, **kwargs):
+        """模拟解析阶段无法访问目标。"""
+        raise failure("synthetic resolution failure")
+    monkeypatch.setattr(Path, "resolve", fail)
+    with pytest.raises(PathInvalidError):
+        read_source(tmp_path, "main.c", 1, 20)

@@ -60,12 +60,12 @@ def list_files(project_dir: Path, project_id: str) -> FileList:
 def read_source(project_dir: Path, path: str, start_line: int, end_line: int) -> SourceSlice:
     """安全读取最多 200 行源码，并按契约添加行号。"""
     relative = relative_path(path)
-    target = (project_dir / relative).resolve()
-    if not target.is_relative_to(project_dir.resolve()) or not target.is_file():
-        raise PathInvalidError("文件不存在或不在工程内")
     try:
+        target = (project_dir / relative).resolve()
+        if not target.is_relative_to(project_dir.resolve()) or not target.is_file():
+            raise PathInvalidError("文件不存在或不在工程内")
         data = target.read_bytes()
-    except OSError as exc:
+    except (OSError, RuntimeError) as exc:
         raise PathInvalidError("文件无法读取") from exc
     if b"\x00" in data:
         raise PathInvalidError("不能读取二进制文件")

@@ -49,3 +49,14 @@
 - 生产健康检查显示 mock_modules 包含 analyze、buildrun、diff、scoring，ingest 已为真实模块；diff 的部署切换仍由块 1 处理。
 - Windows 私钥 ACL 中出现一条额外 SID 权限时，OpenSSH 会拒绝私钥。仅移除该额外权限后连接成功，没有输出密钥内容。
 - deploy/devsync.sh 会删除整个目标开发目录；本次确认 ~/dev/Liu 尚不存在后，使用 git archive 打包已提交代码并传入该目录解压，未调用脚本的递归删除步骤，未上传样例、密钥或本地运行数据。
+
+## 阶段 3（2026-10-26）
+
+- 补充测试先复现 4 个失败用例，再修复两类问题：父目录仅大小写不同会被 Windows 静默合并；read_source 的 resolve 阶段权限错误或链接循环没有转换成 PathInvalidError。
+- 上传时检查每一级路径的大小写拼写一致性；源码读取把解析和读文件放在同一个错误转换边界内。未更改冻结签名、公共契约或其他模块。
+- 生产健康接口已确认 ingest、diff、buildrun 为真实模块，mock_modules 只有 analyze、scoring。
+- 通过服务器已部署的 HTTP 上传和任务查询接口验证四份样例，工程数为 1/11/1/1，架构符合要求，样例 1 为 50 文件/15 C，样例 4 为 61 文件/19 C。任务均停在 waiting_select，没有触发模型评测。
+- 验收任务编号（仅作为服务侧证据，不含样例源码）：样例 1 t20261026113220dfbdbf；样例 2 t20261026113220b574c9；样例 3 t202610261132208ea383；样例 4 t20261026113220e73fef。
+- Linux 验证目录 ~/dev/Liu/stage3-20261026/：`python -B -m pytest -q -m "not sandbox"` 得到 182 passed, 24 deselected, 1 warning in 5.23s。显式配置服务器样例和参考目录，24 个未执行项是块 3 的 Docker 测试；本次不重复运行内核编译和 QEMU。
+- Windows 全量结果为 8 failed, 174 passed, 24 skipped；8 个失败全部来自新合并的块 3 测试：3 个符号链接权限错误、2 个 os.getuid 不存在、3 个默认 GBK 解码错误。相同非 Docker 测试在 Linux 全部通过，未改别人的测试或系统权限来掩盖问题，请块 3 后续处理 Windows 兼容性。
+- 阶段 1、2 已合并，服务器真实模式上传关卡已通过。本次路径边界修补仍需块 1 审核部署。
