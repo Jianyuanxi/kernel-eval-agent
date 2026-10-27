@@ -1,6 +1,6 @@
 # frontend（块 6）
 
-Vue 3 + Vite + JavaScript。阶段 1：上传、选工程、进度时间线。报告页完整内容在阶段 2。
+Vue 3 + Vite + JavaScript + ECharts。上传、选工程、进度时间线、报告页（雷达图、源码抽屉、JSON/Markdown 导出）。追问框在阶段 3。
 
 ```bash
 # 终端 1

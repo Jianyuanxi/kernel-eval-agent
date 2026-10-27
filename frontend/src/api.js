@@ -72,3 +72,12 @@ export function getEvents(taskId, after = 0) {
 export function getReport(taskId) {
   return request(`/api/tasks/${encodeURIComponent(taskId)}/report`)
 }
+
+export function getSource(taskId, path, start = 1, end = 200) {
+  const q = new URLSearchParams({ path, start: String(start), end: String(end) })
+  return request(`/api/tasks/${encodeURIComponent(taskId)}/source?${q}`)
+}
+
+export function exportHref(taskId, format) {
+  return `/api/tasks/${encodeURIComponent(taskId)}/export?format=${format}`
+}

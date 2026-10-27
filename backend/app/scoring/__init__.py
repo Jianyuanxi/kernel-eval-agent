@@ -4,6 +4,7 @@
 """
 from app.schemas import BuildResult, Project, Report, ReportDefect, ReviewResult, RunResult, ScoreResult
 from app.scoring.compute import compute_score as _compute_score
+from app.scoring.markdown import render_markdown as _render_markdown
 
 
 def compute_score(project: Project, build: BuildResult | None, run: RunResult | None,
@@ -17,4 +18,4 @@ def compute_score(project: Project, build: BuildResult | None, run: RunResult | 
 
 def render_markdown(report: Report) -> str:
     """把报告导出成 Markdown（GET /api/tasks/{id}/export?format=md 用）"""
-    raise NotImplementedError
+    return _render_markdown(report)

@@ -2,6 +2,7 @@
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import { getEvents, getReport, getTask, startTask, formatError } from '../api'
 import ToolTimeline from '../components/ToolTimeline.vue'
+import ReportView from './ReportView.vue'
 
 const props = defineProps({ id: { type: String, required: true } })
 
@@ -121,7 +122,7 @@ watch(() => props.id, () => {
 </script>
 
 <template>
-  <section v-if="task" class="card">
+  <section v-if="task && !showReport" class="card">
     <p class="hint">任务 {{ task.task_id }} · {{ task.upload_name }}</p>
 
     <template v-if="showSelect">
@@ -155,18 +156,7 @@ watch(() => props.id, () => {
       <div v-if="task.error" class="error">{{ formatError(task.error) }}</div>
     </template>
 
-    <template v-if="showReport && report">
-      <h1>评测完成</h1>
-      <div class="score-hero">
-        <span class="num">{{ report.score.total }}</span>
-        <span class="grade">{{ report.score.grade }}</span>
-      </div>
-      <p class="lead">
-        {{ report.project.name }} · {{ report.model || '模型未记录' }} · {{ report.generated_at }}
-      </p>
-      <p class="hint">完整报告页（雷达图、缺陷清单、源码查看、导出）在阶段 2 实现。刷新本页可恢复任务。</p>
-      <ToolTimeline :events="report.tool_calls" />
-    </template>
   </section>
+  <ReportView v-if="showReport && report" :task-id="id" :report="report" />
   <div v-if="error" class="error">{{ error }}</div>
 </template>
