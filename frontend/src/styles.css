@@ -137,6 +137,17 @@ h1 { font-size: 24px; margin: 0 0 8px; }
 .src-line { display: block; }
 .src-line.hit { background: #6b4b16; color: #fff8e8; }
 a.btn { display: inline-block; }
+.ask-box {
+  width: 100%; border: 1px solid var(--line); border-radius: 10px;
+  padding: 10px 12px; background: white; resize: vertical;
+}
+.followup-item { margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--line); }
+.md p { margin: 0 0 8px; line-height: 1.6; }
+.md pre {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  background: #16202c; color: #e7eef7; padding: 12px; border-radius: 10px; overflow: auto;
+}
+.md code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
 @media (max-width: 800px) {
   .hero, .item-grid, .diff-cols { grid-template-columns: 1fr; }
 }

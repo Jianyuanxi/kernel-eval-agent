@@ -1,6 +1,7 @@
 <script setup>
 import { computed, ref } from 'vue'
-import { exportHref, formatError, getSource } from '../api'
+import { marked } from 'marked'
+import { exportHref, formatError, getSource, postFollowup } from '../api'
 import ScoreRadar from '../components/ScoreRadar.vue'
 import SourceDrawer from '../components/SourceDrawer.vue'
 import ToolTimeline from '../components/ToolTimeline.vue'
@@ -21,6 +22,10 @@ const props = defineProps({
 const logOpen = ref(false)
 const thoughtsOpen = ref(false)
 const pickedDefect = ref(null)
+const question = ref('')
+const asking = ref(false)
+const askError = ref('')
+const followups = ref([])
 const drawerOpen = ref(false)
 const slice = ref(null)
 const highlight = ref(0)
@@ -65,6 +70,40 @@ function openSource(path, line) {
 function turnPage(delta) {
   if (!slice.value) return
   loadSource(sourcePath.value, Math.max(1, slice.value.start_line + delta), highlight.value)
+}
+
+function pickDefect(row) {
+  pickedDefect.value = row
+  document.getElementById('followup-box')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+}
+
+function renderAnswer(text) {
+  return marked.parse(text || '', { breaks: true, gfm: true })
+}
+
+async function ask() {
+  const q = question.value.trim()
+  if (!q || asking.value) return
+  asking.value = true
+  askError.value = ''
+  try {
+    const res = await postFollowup(props.taskId, q, pickedDefect.value ? pickedDefect.value.index : null)
+    followups.value = [
+      {
+        question: q,
+        defect: pickedDefect.value?.defect?.title || '',
+        answer: res.answer,
+        html: renderAnswer(res.answer),
+        tool_calls: res.tool_calls || [],
+      },
+      ...followups.value,
+    ]
+    question.value = ''
+  } catch (error) {
+    askError.value = error?.name === 'AbortError' ? '追问超时，请稍后再试' : formatError(error)
+  } finally {
+    asking.value = false
+  }
 }
 </script>
 
@@ -181,11 +220,8 @@ function turnPage(delta) {
         </div>
         <p v-if="row.defect.in_baseline_unchanged" class="hint">参考代码原有，不扣分</p>
         <p v-else-if="row.defect.in_student_change" class="hint">学生改动</p>
-        <button class="btn ghost" type="button" @click="pickedDefect = row">追问</button>
+        <button class="btn ghost" type="button" @click="pickDefect(row)">追问</button>
       </article>
-      <p v-if="pickedDefect" class="hint">
-        已选中「{{ pickedDefect.defect.title }}」。追问对话在下一阶段接入，不会修改本报告分数。
-      </p>
     </section>
 
     <section class="card">
@@ -241,6 +277,38 @@ function turnPage(delta) {
           <p v-if="thought.observation" class="hint">观察：{{ thought.observation }}</p>
         </li>
       </ol>
+    </section>
+
+    <section id="followup-box" class="card">
+      <h2>追问</h2>
+      <p class="hint">
+        可以针对某条缺陷提问，也可以直接问。回答不会改分数。
+        <template v-if="pickedDefect">当前缺陷：{{ pickedDefect.defect.title }}</template>
+      </p>
+      <textarea
+        v-model="question"
+        class="ask-box"
+        rows="3"
+        maxlength="1000"
+        :disabled="asking"
+        placeholder="例如：这段代码在中断里跑会出什么问题？"
+        @keydown.meta.enter="ask"
+        @keydown.ctrl.enter="ask"
+      />
+      <div class="btn-row">
+        <button class="btn" type="button" :disabled="asking || !question.trim()" @click="ask">
+          {{ asking ? '正在询问智能体…' : '发送' }}
+        </button>
+        <button v-if="pickedDefect" class="btn ghost" type="button" :disabled="asking" @click="pickedDefect = null">
+          改为自由提问
+        </button>
+      </div>
+      <div v-if="askError" class="error">{{ askError }}</div>
+      <article v-for="(item, i) in followups" :key="i" class="followup-item">
+        <p class="hint">问：{{ item.question }}<template v-if="item.defect">（{{ item.defect }}）</template></p>
+        <div class="md" v-html="item.html" />
+        <ToolTimeline v-if="item.tool_calls.length" :events="item.tool_calls" />
+      </article>
     </section>
 
     <section v-if="report.warnings?.length" class="card">

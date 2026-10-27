@@ -81,3 +81,17 @@ export function getSource(taskId, path, start = 1, end = 200) {
 export function exportHref(taskId, format) {
   return `/api/tasks/${encodeURIComponent(taskId)}/export?format=${format}`
 }
+
+export function postFollowup(taskId, question, defectIndex) {
+  const ctrl = new AbortController()
+  const timer = setTimeout(() => ctrl.abort(), 70000)
+  return request(`/api/tasks/${encodeURIComponent(taskId)}/followup`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      question,
+      defect_index: defectIndex === null || defectIndex === undefined ? null : defectIndex,
+    }),
+    signal: ctrl.signal,
+  }).finally(() => clearTimeout(timer))
+}

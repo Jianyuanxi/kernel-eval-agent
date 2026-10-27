@@ -19,7 +19,9 @@
 - 本机 Node 是 v26，任务说明写的是 22。Vite 7 能构建即可；服务器用 `npm ci`，以提交的 lock 为准。
 - 雷达图用 ECharts，只画 `score !== null` 的项，数值是得分率（得分/满分 × 100）。
 - 源码抽屉走 `GET /api/tasks/{id}/source`，窗口 200 行。假数据模式下文件必须真的在上传包里，报告里的路径才打得开。
-- 追问按钮先记下选中的缺陷，对话框留到阶段 3，避免和 `answer_followup` 绑在同一个 PR。
+- 追问必须带评测时的 `user=task-{id}` 和 `conversation_id`，否则 Dify 会新开会话。知识库工具名以 `dataset_` 开头，要补记 `source=followup, tool=knowledge`。
+- 浏览器 `fetch` 默认没有超时，追问请求用 AbortController 卡在 70 秒，和后端 `FOLLOWUP_TIMEOUT_S=60` 对齐。
+- 一键验收脚本在假数据下会因为样例 2 识别不出 11 个工程而失败，这是预期；最终 `acceptance/result.md` 要在服务器真实模式跑完再提交。
 
 ## 本地联调
 
