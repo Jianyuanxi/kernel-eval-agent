@@ -1,5 +1,12 @@
 # frontend（块 6）
 
-网页：Vue 3 + Vite + JavaScript + ECharts。要求见 `docs/tasks/块6-网页评分与追问.md` 第 4 节。
+Vue 3 + Vite + JavaScript + ECharts。上传、选工程、进度时间线、报告页（雷达图、源码抽屉、导出、追问）。
 
-还没有初始化。块 6 用 `npm create vite@latest . -- --template vue` 初始化，提交 `package.json` 和 `package-lock.json`。服务器部署时会自动 `npm ci && npm run build`，nginx 直接用 `frontend/dist/`。
+```bash
+# 终端 1
+cd backend && python -m uvicorn app.main:app --reload --port 8000
+# 终端 2
+cd frontend && npm install && npm run dev
+```
+
+浏览器打开 Vite 提示的地址（默认 http://127.0.0.1:5173/）。`/api` 已代理到后端。
