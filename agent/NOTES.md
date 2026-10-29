@@ -18,5 +18,13 @@
 ## Dify 资源名
 
 - 工具：`kernel_eval_tools`
-- 知识库：`os-knowledge`（阶段 1 先导入 K_ADDR、K_CRIT、MiniEuler 三份）
+- 知识库：`os-knowledge`（10 份 knowledge 文档；勿写样例具体缺陷答案）
 - 应用：`kernel-eval-agent`（deepseek/deepseek-flash，Function Calling，max 20）
+- 粘贴「指令」时去掉 `system.md` 开头 HTML 注释
+
+## 阶段 2
+
+- 知识库已去样例剧透（K_ADDR / MiniEuler），并补全 K_MEM/SYNC/IRQ/CTX/SYSCALL/DEV/GENERAL（共 10 份）
+- 提示词加强片段模式：compile/run/clang 失败勿编造、勿死磕；无 R 证据时功能点慎标 done
+- 多样例复核（全真实模式）：样例1 `t2026102915235927c023` 仍检出 shmsg.c:96 OUT_OF_BOUNDS；样例4 / 2-lab10 / 2-lab6_pro / 样例3 均 done，工具与 knowledge 齐全，warnings 空
+- 模型对比（选做）未做，继续用 deepseek/deepseek-flash
