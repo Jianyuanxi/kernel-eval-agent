@@ -1,6 +1,6 @@
 <script setup>
 import { computed, ref } from 'vue'
-import { marked } from 'marked'
+import { renderAnswer } from '../markdown'
 import { exportHref, formatError, getSource, postFollowup } from '../api'
 import ScoreRadar from '../components/ScoreRadar.vue'
 import SourceDrawer from '../components/SourceDrawer.vue'
@@ -77,21 +77,18 @@ function pickDefect(row) {
   document.getElementById('followup-box')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
 }
 
-function renderAnswer(text) {
-  return marked.parse(text || '', { breaks: true, gfm: true })
-}
-
 async function ask() {
   const q = question.value.trim()
   if (!q || asking.value) return
   asking.value = true
   askError.value = ''
+  const defect = pickedDefect.value
   try {
-    const res = await postFollowup(props.taskId, q, pickedDefect.value ? pickedDefect.value.index : null)
+    const res = await postFollowup(props.taskId, q, defect ? defect.index : null)
     followups.value = [
       {
         question: q,
-        defect: pickedDefect.value?.defect?.title || '',
+        defect: defect?.defect?.title || '',
         answer: res.answer,
         html: renderAnswer(res.answer),
         tool_calls: res.tool_calls || [],
