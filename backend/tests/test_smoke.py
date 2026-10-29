@@ -126,3 +126,23 @@ def test_tool_wrong_project(client, done_task):
     tid, _ = done_task
     r = client.post("/tools/clang_scan", json={"task_id": tid, "project_id": "p9"}, headers=TOKEN)
     assert r.status_code == 200 and r.json()["error"]["code"] == "PROJECT_NOT_FOUND"
+
+
+def test_read_source_limit_only_in_review(client, done_task, monkeypatch):
+    """评审阶段读源码到上限后返回 READ_LIMIT；追问（stage=done）不受限"""
+    from app.core import storage
+    tid, pid = done_task
+    used = sum(1 for r in storage.read_tool_calls(tid)
+               if r.tool == "read_source" and r.source == "agent" and r.status == "passed")
+    monkeypatch.setattr(config, "READ_SOURCE_MAX", used)
+    body = {"task_id": tid, "project_id": pid, "path": "src/main.c", "start_line": 1, "end_line": 5}
+    info = storage.load_task(tid)
+    info.stage = "reviewing"
+    storage.save_task(info)
+    try:
+        r = client.post("/tools/read_source", headers=TOKEN, json=body)
+        assert r.status_code == 200 and r.json()["error"]["code"] == "READ_LIMIT"
+    finally:
+        info.stage = "done"
+        storage.save_task(info)
+    assert client.post("/tools/read_source", headers=TOKEN, json=body).json()["evidence_id"].startswith("S")
