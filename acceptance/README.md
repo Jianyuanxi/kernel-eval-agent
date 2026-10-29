@@ -8,3 +8,5 @@ python acceptance/run_samples.py --base http://132.232.242.186 --samples /data/k
 
 S8 读取块 4 的 `evaluation/result.md`，文件不存在时记 fail。S12 是手工截图，不在脚本里。
 
+跑完后把 `result.md` 提交进仓库。若 S8 尚未就绪或样例 1 在公网评测超时，可先合并阶段 4，再在服务器上重跑脚本更新该文件。
+

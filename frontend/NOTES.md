@@ -20,8 +20,14 @@
 - 雷达图用 ECharts，只画 `score !== null` 的项，数值是得分率（得分/满分 × 100）。
 - 源码抽屉走 `GET /api/tasks/{id}/source`，窗口 200 行。假数据模式下文件必须真的在上传包里，报告里的路径才打得开。
 - 追问必须带评测时的 `user=task-{id}` 和 `conversation_id`，否则 Dify 会新开会话。知识库工具名以 `dataset_` 开头，要补记 `source=followup, tool=knowledge`。
-- 浏览器 `fetch` 默认没有超时，追问请求用 AbortController 卡在 70 秒，和后端 `FOLLOWUP_TIMEOUT_S=60` 对齐。
+- 切换 `/#/task/{id}` 时要在 `watch(id)` 里重新 `loadTask`/`getReport`，不能只清空 `report`，否则会一直停在「正在加载报告…」。
 - 一键验收脚本在假数据下会因为样例 2 识别不出 11 个工程而失败，这是预期；最终 `acceptance/result.md` 要在服务器真实模式跑完再提交。
+
+## 阶段 4 打磨
+
+- 报告页增加 sticky 目录导航，对应 docs/06 S12 各块，长页可锚点跳转。**不要用 `href="#id"`**，Vue Router 的 hash 模式会把锚点当成路由；用按钮 + `scrollIntoView`。
+- 报告加载中与追问等待用 `.spinner` 提示；warnings 区块用 `warn-card` 样式并放在追问之前。
+- S12 截图命名与说明见 `acceptance/screenshots/README.md`；指导书章节在 `frontend/指导书.md`。
 
 ## 本地联调
 

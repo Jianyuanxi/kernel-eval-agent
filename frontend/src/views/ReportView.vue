@@ -105,10 +105,24 @@ async function ask() {
     asking.value = false
   }
 }
+function scrollToSection(id) {
+  document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+}
 </script>
 
 <template>
   <div class="report">
+    <nav class="report-nav card" aria-label="报告目录">
+      <button type="button" class="nav-link" @click="scrollToSection('sec-scores')">分项分数</button>
+      <button type="button" class="nav-link" @click="scrollToSection('sec-build')">编译运行</button>
+      <button type="button" class="nav-link" @click="scrollToSection('sec-features')">功能点</button>
+      <button type="button" class="nav-link" @click="scrollToSection('sec-defects')">缺陷清单</button>
+      <button type="button" class="nav-link" @click="scrollToSection('sec-style')">规范创新</button>
+      <button type="button" class="nav-link" @click="scrollToSection('sec-diff')">参考对比</button>
+      <button type="button" class="nav-link" @click="scrollToSection('sec-tools')">工具过程</button>
+      <button type="button" class="nav-link" @click="scrollToSection('followup-box')">追问</button>
+    </nav>
+
     <section class="card hero">
       <div>
         <p class="hint">任务 {{ report.task_id }}</p>
@@ -128,7 +142,7 @@ async function ask() {
       <ScoreRadar :items="report.score.items" />
     </section>
 
-    <section class="card">
+    <section id="sec-scores" class="card">
       <h2>分项分数</h2>
       <div class="item-grid">
         <article v-for="item in report.score.items" :key="item.key" class="item-card">
@@ -141,7 +155,7 @@ async function ask() {
       </div>
     </section>
 
-    <section class="card">
+    <section id="sec-build" class="card">
       <h2>编译与运行</h2>
       <p v-if="fragment">只提交了代码片段</p>
       <template v-else>
@@ -173,7 +187,7 @@ async function ask() {
       </template>
     </section>
 
-    <section class="card">
+    <section id="sec-features" class="card">
       <h2>功能点</h2>
       <ul class="feature-list">
         <li v-for="feature in report.features" :key="feature.feature_id">
@@ -193,7 +207,7 @@ async function ask() {
       </ul>
     </section>
 
-    <section class="card">
+    <section id="sec-defects" class="card">
       <h2>缺陷清单</h2>
       <article v-for="row in defects" :key="row.index" class="defect">
         <header>
@@ -224,7 +238,7 @@ async function ask() {
       </article>
     </section>
 
-    <section class="card">
+    <section id="sec-style" class="card">
       <h2>规范与创新</h2>
       <p>规范：{{ STYLE_GRADE[report.style.grade] }}。{{ report.style.reason }}</p>
       <p>学生声称：{{ report.innovation.claimed || '（无）' }}</p>
@@ -245,7 +259,7 @@ async function ask() {
       </p>
     </section>
 
-    <section class="card">
+    <section id="sec-diff" class="card">
       <h2>参考代码对比</h2>
       <template v-if="report.diff && report.diff.status === 'passed'">
         <p>
@@ -264,7 +278,7 @@ async function ask() {
       <p v-else class="hint">{{ report.diff?.note || '没有可用的参考代码对比' }}</p>
     </section>
 
-    <section class="card">
+    <section id="sec-tools" class="card">
       <h2>工具调用过程</h2>
       <ToolTimeline :events="report.tool_calls" />
       <button class="btn ghost" type="button" @click="thoughtsOpen = !thoughtsOpen">
@@ -277,6 +291,13 @@ async function ask() {
           <p v-if="thought.observation" class="hint">观察：{{ thought.observation }}</p>
         </li>
       </ol>
+    </section>
+
+    <section v-if="report.warnings?.length" id="sec-warnings" class="card warn-card">
+      <h2>提示</h2>
+      <ul>
+        <li v-for="(warning, i) in report.warnings" :key="i">{{ warning }}</li>
+      </ul>
     </section>
 
     <section id="followup-box" class="card">
@@ -309,13 +330,6 @@ async function ask() {
         <div class="md" v-html="item.html" />
         <ToolTimeline v-if="item.tool_calls.length" :events="item.tool_calls" />
       </article>
-    </section>
-
-    <section v-if="report.warnings?.length" class="card">
-      <h2>提示</h2>
-      <ul>
-        <li v-for="(warning, i) in report.warnings" :key="i">{{ warning }}</li>
-      </ul>
     </section>
 
     <SourceDrawer
