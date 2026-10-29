@@ -18,6 +18,7 @@ ErrorCode = Literal[
     "TASK_STATE_CONFLICT",   # 例如任务已在运行又调用 start
     "REQUEST_INVALID",       # 请求参数不合法（缺字段、类型不对、行号 < 1 等）
     "PATH_INVALID",          # read_source 等传入了工程外或不存在的路径
+    "READ_LIMIT",            # 一次评审里 read_source 成功次数已达 KE_READ_SOURCE_MAX
     "TOOL_TOKEN_INVALID",
     "RESULT_NOT_READY",      # 工具被调用时对应结果还没生成
     "SANDBOX_ERROR",         # docker 起不来、镜像不存在等

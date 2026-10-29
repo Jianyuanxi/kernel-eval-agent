@@ -83,6 +83,13 @@ def read_source(req: ReadSourceRequest):
     if err:
         return err
     info, paths = ctx
+    if info.stage != "done":  # 评审阶段限次数，追问不限
+        used = sum(1 for r in storage.read_tool_calls(info.task_id)
+                   if r.tool == "read_source" and r.source == "agent" and r.status == "passed")
+        if used >= config.READ_SOURCE_MAX:
+            _log(info, "read_source", req.model_dump(), "error", t0, f"读源码次数已达上限 {config.READ_SOURCE_MAX}")
+            return _err("READ_LIMIT", f"本次评测最多读 {config.READ_SOURCE_MAX} 次源码，已经用完。"
+                                      "不要再调用 read_source，根据已经读到的内容直接输出最终 JSON。")
     end = min(req.end_line, req.start_line + 199)
     try:
         s = modules.get("ingest").read_source(paths.project, req.path, req.start_line, end)

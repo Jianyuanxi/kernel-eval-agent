@@ -23,7 +23,7 @@ SAMPLE_DIRS = {
     "4": "样例4_完整工程",
 }
 SAMPLE2_LABS = ["lab1", "lab2", "lab2_hw1", "lab4", "lab5", "lab5_pro", "lab6", "lab6_pro", "lab8", "lab9", "lab10"]
-WAIT_S = 360
+WAIT_S = 720  # 比智能体预算 600 秒多留编译、运行、扫描的时间
 POLL_S = 2
 
 
@@ -176,7 +176,7 @@ def check_s4(reports: dict) -> Check:
     for key, item in reports.items():
         elapsed = item["elapsed"]
         parts.append(f"{key} {item['report']['task_id']} {elapsed:.1f}s")
-        if elapsed > 300:
+        if elapsed > 600:  # docs/06 S4：10 分钟
             ok = False
     c.ok = ok
     c.evidence = "；".join(parts)
