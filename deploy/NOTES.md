@@ -13,6 +13,7 @@
 - 2026-10-25 切 diff（块 2 阶段 2，PR #4）和 buildrun（块 3，PR #5），部署 23a4018：`KE_MOCK_MODULES=analyze,scoring`，改前备份 `kernel-eval.env.bak-20261025`。合并前把两个 PR 合在一起，在服务器用真实沙箱、四份样例、参考代码跑全量后端测试（`KE_REQUIRE_SANDBOX=1`）：202 passed，0 skipped。生产验收：样例 1 编译通过（2 警告、0 错误，产物 `build/miniEuler`），运行出提示符并完成 top/tick 交互（约 20 秒），对比基线 lab10、相同 14 / 修改 26 / 新增 10，和契约示例一致；完整跑到 done，79 分，warnings 空。lab6_pro 两种表现（正常完成 / EXC_STORM）见块 3 的 NOTES，生产上未单独跑。
 - 2026-10-27 切 analyze（块 4 阶段 1、2，PR #8、#9，部署 fb2843b）：`KE_MOCK_MODULES=scoring`，改前备份 `kernel-eval.env.bak-20261027`。合并前服务器全量测试 239 passed，0 skipped。样例 1 生产跑到 done：clang 扫描 full 模式 14/15 个文件、7 条告警、约 8 秒，日志在 `logs/p1/scan.log`；编译、运行、对比结果和上次一致，79 分（scoring 仍为 mock）。
 - 2026-10-28 切 scoring（块 6 阶段 1–3，PR #10，部署 9c2c5fc）：`KE_MOCK_MODULES=`（空值，全部真实），改前备份 `kernel-eval.env.bak-20261028`。合并前服务器全量测试 253 passed、`npm ci && npm run build` 成功。样例 1 全真实跑到 done：67 分（及格），可靠性 0/25（20 条缺陷，18 条计分；vsnprintf_s.c、prt_sem.c 两条标为参考代码原有，不计分）。网页：上传页、进度时间线、报告页各节都正常；追问约 30 秒内返回，记成 source=followup，分数不变；导出 JSON/Markdown 都是 200。
+- 2026-10-29 解决智能体超时（PR #13）：查 Dify 的 `message_agent_thoughts` 表，超时那次 19 轮，输入从 2.7 千涨到 13.3 万 tokens（读过的源码每轮都重发），每轮推理输出 5～8 千 tokens，最终报告 1.8 万 tokens；吞吐稳定在 160～190 tokens/秒，不是限流。改成评审时 read_source 最多成功 20 次（`KE_READ_SOURCE_MAX`，超过返回 READ_LIMIT）、智能体预算 600 秒、S4 放宽到 10 分钟。改后样例 1：8 轮、输入 37.6 万 / 输出 2.6 万 tokens（改前 93～118 万 / 5.7～8.2 万），智能体 156 秒，整次 3 分 11 秒，仍是 67 分，5 条主要缺陷不变。
 - 正式服务以 `ubuntu` 用户运行、在 docker 组里；块 3 加固后的沙箱拒绝 root 运行，以后不要把服务改成 root。
 
 ## 踩坑
