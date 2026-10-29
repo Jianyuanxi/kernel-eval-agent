@@ -20,10 +20,9 @@ def _same_location(item: dict, other: dict) -> bool:
 def _is_new(item: dict, baseline: list[dict], *, clang: bool) -> bool:
     """过滤基线中已有的同类告警或缺陷。"""
     kind = "defect_type" if clang else "type"
-    detail = "message" if clang else "title"
     return not any(
-        _same_location(item, old) and item.get(kind) == old.get(kind)
-        and item.get(detail) == old.get(detail) for old in baseline
+        item.get("path") == old.get("path") and item.get("line") == old.get("line")
+        and item.get(kind) == old.get(kind) for old in baseline
     )
 
 
@@ -78,6 +77,7 @@ def _score(item: dict, report: dict, baseline: dict) -> tuple[bool, bool, str]:
         if _same_location(d, item) and d.get("type") in accepted
         and _is_new(d, baseline["defects"], clang=False)
     ]
+    system_hits.sort(key=lambda defect: abs(defect["line"] - item["line"]))
     title = system_hits[0]["title"] if system_hits else ""
     return bool(clang_hits), bool(system_hits), title
 

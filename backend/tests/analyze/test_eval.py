@@ -40,3 +40,19 @@ def test_markdown_contains_rates_and_escapes_title():
     ])
     assert "1/2（50%）" in table and "2/2（100%）" in table
     assert "空指针\\|崩溃" in table
+
+
+def test_reworded_baseline_is_excluded_but_nearby_new_location_counts():
+    """同位置原有问题换标题不算新增，邻近植入位置的新问题仍可计入。"""
+    truth = {"path": "shell.c", "line": 46, "type": "OUT_OF_BOUNDS"}
+    baseline = {"scan": {"findings": []}, "defects": [
+        {"path": "shell.c", "line": 43, "type": "OUT_OF_BOUNDS", "title": "原有写越界"},
+    ]}
+    report = {"scan": {"findings": []}, "defects": [
+        {"path": "shell.c", "line": 43, "type": "OUT_OF_BOUNDS", "title": "换了一种说法"},
+    ]}
+    assert run_eval._score(truth, report, baseline) == (False, False, "")
+    report["defects"].append(
+        {"path": "shell.c", "line": 46, "type": "OUT_OF_BOUNDS", "title": "新增读越界"}
+    )
+    assert run_eval._score(truth, report, baseline) == (False, True, "新增读越界")
