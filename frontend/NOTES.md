@@ -31,5 +31,11 @@
 
 ## 本地联调
 
+- 审查修复：追问 Markdown 使用独立的 `Marked` 渲染器，原始 HTML 转义，链接仅允许 http/https/mailto，图片仅允许 http/https，避免 `v-html` 执行回答里的标签或脚本协议；不新增依赖。
+- 轮询改成请求结束后再等待 2 秒，单工程自动开始只启动一次；页面每次重新加载或离开时更新版本号，旧请求返回后不再写入当前任务。
+- 已完成任务加载报告失败会自动重试，错误提示提供「重新加载」按钮；成功后清除错误并停止轮询。
+- 追问发送前固定缺陷索引和标题，等待期间切换缺陷不会改变已发问题的归属。
+- `cd frontend && npm test`：用 Node 自带测试工具及 Vue 编译器检查真实组件脚本，模拟接口、计时器及乱序响应；覆盖上述边界情况。
+
 后端假数据：`cd backend && python -m uvicorn app.main:app --reload --port 8000`（不建 `.env` 时默认 `KE_MOCK_MODULES=all`）。
 前端：`cd frontend && npm install && npm run dev`。上传任意 zip 会走到样例 1 的假报告。

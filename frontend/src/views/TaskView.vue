@@ -21,6 +21,7 @@ const report = ref(null)
 const error = ref('')
 const starting = ref(false)
 let timer = null
+let generation = 0
 
 const stage = computed(() => task.value?.stage || '')
 const showSelect = computed(() => stage.value === 'waiting_select')
@@ -43,80 +44,86 @@ function stageClass(key) {
   return ''
 }
 
-async function loadTask() {
-  task.value = await getTask(props.id)
+/** 只接收当前页面这轮加载的响应。 */
+function isCurrent(version) {
+  return version === generation
 }
 
-async function autoStartIfNeeded() {
-  if (!task.value || task.value.stage !== 'waiting_select') return
-  if (task.value.projects.length !== 1) return
-  await choose(task.value.projects[0].project_id)
-}
-
-async function choose(projectId) {
+async function choose(projectId, version = generation) {
+  if (starting.value || !isCurrent(version)) return
   starting.value = true
   error.value = ''
   try {
-    task.value = await startTask(props.id, projectId)
-    startPolling()
+    const info = await startTask(props.id, projectId)
+    if (!isCurrent(version)) return
+    task.value = info
+    poll(version)
   } catch (e) {
-    error.value = formatError(e)
+    if (isCurrent(version)) error.value = formatError(e)
   } finally {
-    starting.value = false
+    if (isCurrent(version)) starting.value = false
   }
 }
 
-async function poll() {
+/** 完成本次请求后才安排下一次轮询，避免慢请求重叠。 */
+async function poll(version) {
+  let finished = false
   try {
     const after = events.value.reduce((m, e) => Math.max(m, e.seq), 0)
     const data = await getEvents(props.id, after)
-    if (data.tool_calls?.length) events.value = events.value.concat(data.tool_calls)
-    if (task.value) {
-      task.value.stage = data.stage
-      task.value.progress = data.progress
+    if (!isCurrent(version)) return
+    if (data.tool_calls?.length) {
+      const seen = new Set(events.value.map((event) => event.seq))
+      events.value = events.value.concat(data.tool_calls.filter((event) => !seen.has(event.seq)))
     }
+    task.value.stage = data.stage
+    task.value.progress = data.progress
     if (data.stage === 'done') {
-      report.value = await getReport(props.id)
-      stop()
+      const result = await getReport(props.id)
+      if (!isCurrent(version)) return
+      report.value = result
+      finished = true
     } else if (data.stage === 'failed') {
-      await loadTask()
-      stop()
+      const info = await getTask(props.id)
+      if (!isCurrent(version)) return
+      task.value = info
+      finished = true
     }
+    error.value = ''
   } catch (e) {
-    error.value = formatError(e)
+    if (isCurrent(version)) error.value = formatError(e)
+  } finally {
+    if (isCurrent(version) && !finished) timer = setTimeout(() => poll(version), 2000)
   }
-}
-
-function startPolling() {
-  stop()
-  poll()
-  timer = setInterval(poll, 2000)
 }
 
 function stop() {
-  if (timer) {
-    clearInterval(timer)
-    timer = null
-  }
+  generation += 1
+  clearTimeout(timer)
+  timer = null
 }
 
 onUnmounted(stop)
 
 async function bootstrap() {
+  stop()
+  const version = generation
+  task.value = null
   events.value = []
   report.value = null
   error.value = ''
-  stop()
+  starting.value = false
   try {
-    await loadTask()
-    await autoStartIfNeeded()
-    if (task.value.stage === 'done') {
-      report.value = await getReport(props.id)
-    } else if (task.value.stage !== 'waiting_select') {
-      startPolling()
+    const info = await getTask(props.id)
+    if (!isCurrent(version)) return
+    task.value = info
+    if (info.stage === 'waiting_select') {
+      if (info.projects.length === 1) await choose(info.projects[0].project_id, version)
+    } else {
+      poll(version)
     }
   } catch (e) {
-    error.value = formatError(e)
+    if (isCurrent(version)) error.value = formatError(e)
   }
 }
 
@@ -161,9 +168,12 @@ watch(() => props.id, bootstrap)
 
   </section>
   <section v-if="showReport && !report" class="card">
-    <h1>正在加载报告…</h1>
-    <p class="lead"><span class="spinner" aria-hidden="true" /> 请稍候，正在读取评分结果。</p>
+    <h1>{{ error ? '报告加载失败' : '正在加载报告…' }}</h1>
+    <p class="lead"><span v-if="!error" class="spinner" aria-hidden="true" /> {{ error ? '正在自动重试，请稍候。' : '请稍候，正在读取评分结果。' }}</p>
   </section>
-  <ReportView v-if="showReport && report" :task-id="id" :report="report" />
-  <div v-if="error" class="error">{{ error }}</div>
+  <ReportView v-if="showReport && report" :key="id" :task-id="id" :report="report" />
+  <div v-if="error" class="error">
+    {{ error }}
+    <button class="btn ghost" type="button" @click="bootstrap">重新加载</button>
+  </div>
 </template>
