@@ -301,8 +301,8 @@ def check_s9(client, samples: Path) -> Check:
             main.write_text("this is not C;\n" + main.read_text(encoding="utf-8", errors="replace"), encoding="utf-8")
             info, report, elapsed = evaluate(client, copy)
             build = (report or {}).get("build") or {}
-            compile_ok = info.get("stage") in {"done", "failed"} and (
-                (report and (build.get("status") == "failed" or (report.get("score") or {}).get("items")))
+            compile_ok = info.get("stage") in {"done", "failed"} and bool(  # 没出报告时 report 是 None，要转成 False
+                report and (build.get("status") == "failed" or (report.get("score") or {}).get("items"))
             )
             bits.append(f"编译不过 {info.get('task_id')} {info.get('stage')} build={build.get('status')} {elapsed:.1f}s")
             ok = ok and compile_ok
