@@ -1,10 +1,10 @@
 # MiniEuler 实验要点（八个功能点）
 
-MiniEuler 是 UniProton 的教学精简版：CMake 交叉编译到 ARM64，QEMU `virt` 机运行，串口当控制台。评审时按功能点对照“关键文件 / 函数 / 运行现象”，下面按 `F_*` 归纳常见实现位置（具体路径以学生工程为准）。
+MiniEuler 是 UniProton 的教学精简版：CMake 交叉编译到 ARM64，QEMU `virt` 机运行，串口当控制台。评审时按功能点对照“关键文件 / 函数 / 运行现象”，下面按 `F_*` 归纳一般实现位置（具体路径以学生工程为准）。
 
 ## F_UART 串口输出
 
-板级串口（如 PL011）初始化、字符输出与 `PRT_Printf` / `print.c` 一类封装。启动日志、shell 提示符、回显都依赖它。运行证据看启动输出 R1 里是否有可读打印；代码看 `src/bsp/pl011.c`、`src/bsp/print.c`。
+板级串口（如 PL011）初始化、字符输出与 `PRT_Printf` / `print.c` 一类封装。启动日志、shell 提示符、回显都依赖它。运行证据看启动输出 R1 里是否有可读打印；代码常在 `src/bsp/pl011.c`、`src/bsp/print.c`。
 
 ## F_EXC 异常处理
 
@@ -28,11 +28,11 @@ MiniEuler 是 UniProton 的教学精简版：CMake 交叉编译到 ARM64，QEMU 
 
 ## F_SHELL shell 命令
 
-`shmsg.c`、shell 任务：从 UART 环形缓冲取字符、组命令、解析并调用显示函数（如 `top`/`tick`/`mem`）。务必检查命令缓冲长度，避免 `cmd[idx]` 越界（样例中常见隐患）。运行证据看 R2 及后续命令输出。
+shell 任务一般从 UART 环形缓冲取字符、写入定长命令缓冲、解析并调用显示函数（如 `top`/`tick`/`mem`）。组命令时要保证下标不超过命令数组容量；运行证据看 R2 及后续命令输出。相关代码常在 `shmsg.c` 与 shell 初始化路径。
 
 ## F_INNOV 创新功能
 
-学生在 README、`创新功能实现.md` 或注释中声称的扩展（新命令、统计、调度策略等）。要在源码里找到对应实现，不能只写在文档里；`innovation.found_in_code` 必须与代码一致。
+学生在 README、说明文档或注释中声称的扩展（新命令、统计、调度策略等）。要在源码里找到对应实现，不能只写在文档里；`innovation.found_in_code` 必须与代码一致。
 
 ## 评审时建议的阅读顺序
 

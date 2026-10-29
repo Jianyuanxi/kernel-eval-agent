@@ -25,10 +25,11 @@ Dify 智能体的全部“源码”：
 ### 2. 知识库
 
 1. 知识库 → 创建即用型 → 名称 `os-knowledge`。
-2. 上传 `agent/knowledge/` 下 Markdown（阶段 1 至少 K_ADDR、K_CRIT、MiniEuler 三份）。
+2. 上传 `agent/knowledge/` 下全部 Markdown（10 份：K_* 与 MiniEuler）。
 3. 分段：自定义，分隔符 `\n## `，最大长度 800。
 4. 索引：高质量；向量模型 `kinfra-text-embedding-0.6b`。
 5. 检索：混合检索，语义 0.7 / 关键词 0.3，Top K 4，不开重排。
+6. **不要**在知识库里写往届样例的具体缺陷位置或“标准答案”，只写通用原理与 MiniEuler 一般写法。
 
 若索引报 `PGVECTOR_PASSWORD`：确认 `/opt/dify/docker/envs/vectorstores/pgvector.env` 存在且含 `PGVECTOR_HOST=pgvector` 等，并重启 Dify 的 api/worker。
 
@@ -36,7 +37,7 @@ Dify 智能体的全部“源码”：
 
 1. 工作室 → 创建应用 → **Agent**（不是 Chatflow），名称 `kernel-eval-agent`。
 2. 模型：`deepseek/deepseek-flash`；Agent 策略：**函数调用**；最大迭代 **20**。
-3. 指令：粘贴 `agent/prompts/system.md`（去掉开头 HTML 注释）。
+3. 指令：粘贴 `agent/prompts/system.md`（**必须去掉**开头 `<!-- … -->` 注释，不要带进 Dify）。
 4. 工具：添加 `kernel_eval_tools` 的 6 个工具（配置里 `provider_id` 必须是工具 UUID）。
 5. 上下文：添加知识库 `os-knowledge`。
 6. 关掉开场白与建议问题 → 发布。
