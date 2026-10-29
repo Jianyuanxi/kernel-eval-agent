@@ -35,7 +35,10 @@ UNPACK_MAX_FILES = 5000
 TOOL_TOKEN = _env("TOOL_TOKEN", "dev-token")
 DIFY_API_BASE = _env("DIFY_API_BASE", "http://127.0.0.1:8080/v1")
 DIFY_APP_KEY = _env("DIFY_APP_KEY", "")
-AGENT_TIMEOUT_S = int(_env("AGENT_TIMEOUT_S", "420"))  # 一次评审的总预算：首次、提醒、修正共用
+AGENT_TIMEOUT_S = int(_env("AGENT_TIMEOUT_S", "600"))  # 一次评审的总预算：首次、提醒、修正共用
+# 一次评审里智能体最多成功读几次源码。每次读的内容都会留在上下文里、之后每轮重发，
+# 不限的话样例 1 会读 40～55 次、输入涨到 13 万 tokens，智能体阶段超过 7 分钟。追问不受限。
+READ_SOURCE_MAX = int(_env("READ_SOURCE_MAX", "20"))
 FOLLOWUP_TIMEOUT_S = int(_env("FOLLOWUP_TIMEOUT_S", "60"))  # 一次追问的总预算（验收目标 30 秒内回答）
 # 只用于写进报告；真正用哪个模型在 Dify 应用里选，两边要一致
 MODEL_NAME = _env("MODEL_NAME", "deepseek/deepseek-flash")
