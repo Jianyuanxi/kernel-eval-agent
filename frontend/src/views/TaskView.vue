@@ -100,7 +100,13 @@ function stop() {
   }
 }
 
-onMounted(async () => {
+onUnmounted(stop)
+
+async function bootstrap() {
+  events.value = []
+  report.value = null
+  error.value = ''
+  stop()
   try {
     await loadTask()
     await autoStartIfNeeded()
@@ -112,13 +118,10 @@ onMounted(async () => {
   } catch (e) {
     error.value = formatError(e)
   }
-})
+}
 
-onUnmounted(stop)
-watch(() => props.id, () => {
-  events.value = []
-  report.value = null
-})
+onMounted(bootstrap)
+watch(() => props.id, bootstrap)
 </script>
 
 <template>
@@ -156,6 +159,10 @@ watch(() => props.id, () => {
       <div v-if="task.error" class="error">{{ formatError(task.error) }}</div>
     </template>
 
+  </section>
+  <section v-if="showReport && !report" class="card">
+    <h1>正在加载报告…</h1>
+    <p class="lead"><span class="spinner" aria-hidden="true" /> 请稍候，正在读取评分结果。</p>
   </section>
   <ReportView v-if="showReport && report" :task-id="id" :report="report" />
   <div v-if="error" class="error">{{ error }}</div>

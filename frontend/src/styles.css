@@ -100,6 +100,27 @@ h1 { font-size: 24px; margin: 0 0 8px; }
 .score-hero .grade { font-size: 22px; color: var(--accent-2); }
 
 .report { display: grid; gap: 16px; }
+.report-nav {
+  display: flex; flex-wrap: wrap; gap: 8px 14px; padding: 14px 18px;
+  position: sticky; top: 0; z-index: 5; background: rgba(255, 253, 248, 0.96);
+  backdrop-filter: blur(6px);
+}
+.report-nav a, .report-nav .nav-link {
+  font-size: 13px; color: var(--muted); padding: 4px 8px; border-radius: 8px;
+  border: 0; background: transparent; cursor: pointer; font: inherit;
+}
+.report-nav a:hover, .report-nav .nav-link:hover { color: var(--accent); background: #eef7f5; }
+.spinner {
+  display: inline-block; width: 14px; height: 14px; margin-right: 8px;
+  border: 2px solid #c5d0dc; border-top-color: var(--accent); border-radius: 50%;
+  animation: spin 0.8s linear infinite; vertical-align: -2px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.warn-card { border-color: #f0d7a2; background: #fff9ed; }
+.defect header { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 6px; }
+.btn:focus-visible, .linkish:focus-visible, .report-nav a:focus-visible {
+  outline: 2px solid var(--accent); outline-offset: 2px;
+}
 .report h2 { margin: 0 0 12px; font-size: 18px; }
 .report h3 { margin: 8px 0; font-size: 15px; }
 .hero { display: grid; grid-template-columns: 1fr 320px; gap: 12px; align-items: center; }
