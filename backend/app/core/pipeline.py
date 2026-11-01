@@ -187,9 +187,10 @@ def _called_tools(task_id: str) -> set[str]:
 
 
 def _record_knowledge(task_id: str, thoughts: list[AgentThought]) -> None:
-    """知识库检索不经过我们的工具服务，从 agent_thought 里补记录（Dify 知识库工具名以 dataset_ 开头）"""
+    """知识库检索不经过我们的工具服务，从 agent_thought 里补记录（Dify 知识库工具名以 dataset_ 开头；
+    同一轮并行调多个工具时 tool 是用 ; 拼起来的）"""
     for t in thoughts:
-        if t.tool.startswith("dataset_"):
+        if any(n.startswith("dataset_") for n in t.tool.split(";")):
             _record(task_id, "knowledge", "passed", time.monotonic(), f"检索知识库：{t.tool_input[:80]}", source="agent")
 
 

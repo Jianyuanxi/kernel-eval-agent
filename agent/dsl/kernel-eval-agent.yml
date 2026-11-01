@@ -16,7 +16,7 @@ kind: app
 model_config:
   agent_mode:
     enabled: true
-    max_iteration: 20
+    max_iteration: 5
     strategy: function_call
     tools:
     - enabled: true

@@ -218,6 +218,14 @@ def test_nudge_keeps_first_conclusions(monkeypatch):
     assert review.features[0].status == first["features"][0]["status"]
 
 
+def test_knowledge_found_in_parallel_round():
+    """同一轮并行调用时 Dify 把工具名用 ; 拼在一起，里面有知识库也要算调过"""
+    from app.schemas import AgentThought
+    tid = _new_task()
+    pipeline._record_knowledge(tid, [AgentThought(id="t", position=1, tool="clang_scan;dataset_ab_cd", tool_input="{}")])
+    assert "knowledge" in pipeline._called_tools(tid)
+
+
 def test_dify_strip_think():
     """推理模型的 <think> 段不进答案，否则追问会显示思考过程、评测 JSON 可能取错。"""
     from app.core.dify_client import strip_think
