@@ -14,6 +14,7 @@
 - 2026-10-27 切 analyze（块 4 阶段 1、2，PR #8、#9，部署 fb2843b）：`KE_MOCK_MODULES=scoring`，改前备份 `kernel-eval.env.bak-20261027`。合并前服务器全量测试 239 passed，0 skipped。样例 1 生产跑到 done：clang 扫描 full 模式 14/15 个文件、7 条告警、约 8 秒，日志在 `logs/p1/scan.log`；编译、运行、对比结果和上次一致，79 分（scoring 仍为 mock）。
 - 2026-10-28 切 scoring（块 6 阶段 1–3，PR #10，部署 9c2c5fc）：`KE_MOCK_MODULES=`（空值，全部真实），改前备份 `kernel-eval.env.bak-20261028`。合并前服务器全量测试 253 passed、`npm ci && npm run build` 成功。样例 1 全真实跑到 done：67 分（及格），可靠性 0/25（20 条缺陷，18 条计分；vsnprintf_s.c、prt_sem.c 两条标为参考代码原有，不计分）。网页：上传页、进度时间线、报告页各节都正常；追问约 30 秒内返回，记成 source=followup，分数不变；导出 JSON/Markdown 都是 200。
 - 2026-10-29 解决智能体超时（PR #13）：查 Dify 的 `message_agent_thoughts` 表，超时那次 19 轮，输入从 2.7 千涨到 13.3 万 tokens（读过的源码每轮都重发），每轮推理输出 5～8 千 tokens，最终报告 1.8 万 tokens；吞吐稳定在 160～190 tokens/秒，不是限流。改成评审时 read_source 最多成功 20 次（`KE_READ_SOURCE_MAX`，超过返回 READ_LIMIT）、智能体预算 600 秒、S4 放宽到 10 分钟。改后样例 1：8 轮、输入 37.6 万 / 输出 2.6 万 tokens（改前 93～118 万 / 5.7～8.2 万），智能体 156 秒，整次 3 分 11 秒，仍是 67 分，5 条主要缺陷不变。
+- 2026-11-01 最终一键验收（main e25c20a，含块 5 阶段 3 提示词）：10/11 pass。5 个样例/工程全部 done，单次 190～372 秒；S5 没过：样例 1 两次 73 / 81 分，差 8 分（要求 ≤5），差在可靠性（第一次计了 2 条严重缺陷 4 分，第二次 0 条严重 14 分），是模型每次找到的缺陷不同。
 - 正式服务以 `ubuntu` 用户运行、在 docker 组里；块 3 加固后的沙箱拒绝 root 运行，以后不要把服务改成 root。
 
 ## 踩坑
@@ -22,3 +23,5 @@
 2. **推理模型的思考段**：deepseek-flash 的回答开头带 `<think>…</think>`。`dify_client.chat()` 返回前统一去掉，评测 JSON 解析和追问展示都拿到干净答案。
 3. **追问很吃 token**：同一会话带着整次评测的上下文，一次追问约 11.6 万输入 tokens（约 0.1～0.2 元）。演示时不用担心，批量测试时注意。
 4. **Dify 报的价格是 0**：OpenAI-API-compatible 插件没填单价，message_end 里的 price 全是 0，实际花费去 TokenHub「用量统计」看。
+5. **余额扣光会被隔离**：2026-10-29 16:05 起所有评测 AGENT_ERROR，Dify 里是 402 / `403004`「API Key 所属账号已欠费，访问的服务 ID 已被隔离」。充值后要回控制台确认服务恢复，再重跑。一次 `run_samples.py --repeat 2` 约 700 万输入 tokens（8～17 元），批量跑前先看余额。
+6. **glm-5.3-flash 免费额度只够约 3 次评测**：2026-11-01 试过把应用切到 glm-5.3-flash 省钱：能跑通（样例 1 69 分），但单次评测约 600 秒，碰到时间预算；约 100 万 tokens 后免费额度用完，返回 402 / `401008`。已切回 deepseek-flash。查用量：`docker exec docker-db_postgres-1 psql -U postgres -d dify -c "select model_id, count(*), sum(message_tokens) from messages group by 1"`。
