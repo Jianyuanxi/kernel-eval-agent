@@ -34,3 +34,8 @@
 - 后端 `#13` 起评审阶段 `read_source` 成功上限 20（`READ_LIMIT`）；提示词改为优先读 clang 告警与 diff 改动文件，收到 READ_LIMIT 直接出 JSON
 - `defects` 上限 30→20，缩短报告
 - 块 4 植入缺陷 S8 已 7/10 通过；提示词补充 DEADLOCK / IRQ_NOT_RESTORED 类型要写准（针对 A05/A08/A09 漏检的通用指引，不写具体补丁位置）
+
+## 阶段 4
+
+- 根据 NOTES / README 写 `agent/指导书.md`（Dify 工具、知识库、Agent、提示词与 READ_LIMIT 对齐、导出 DSL、验收要点）
+- 不含密钥与样例具体答案；供块 1 汇总 Word 指导书
