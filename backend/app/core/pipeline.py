@@ -89,6 +89,14 @@ def run_pipeline(task_id: str, project_id: str) -> None:
         _set(info, "failed", "内部错误")
 
 
+def _run_kernel(br, project: Project, paths: TaskPaths, build: BuildResult) -> RunResult:
+    """在 QEMU 里跑一次内核，沙箱出错转成 error 结果"""
+    try:
+        return _call(br.run, project, paths.work_build, build, paths.logs)
+    except SandboxError as e:
+        return RunResult(status="error", error=ErrorInfo(code="SANDBOX_ERROR", message=str(e)))
+
+
 def _evaluate(info: TaskInfo, paths: TaskPaths, project: Project) -> Report:
     tid = info.task_id
     br, an, ing, df = modules.get("buildrun"), modules.get("analyze"), modules.get("ingest"), modules.get("diff")
@@ -110,10 +118,9 @@ def _evaluate(info: TaskInfo, paths: TaskPaths, project: Project) -> Report:
 
         _set(info, "running", "正在 QEMU 中运行内核")
         t0 = time.monotonic()
-        try:
-            run = _call(br.run, project, paths.work_build, build, paths.logs)
-        except SandboxError as e:
-            run = RunResult(status="error", error=ErrorInfo(code="SANDBOX_ERROR", message=str(e)))
+        run = _run_kernel(br, project, paths, build)
+        if run.status == "failed" and run.booted:  # 启动了但没进 shell：学生内核有竞争时偶发，重跑一次用新结果
+            run = _run_kernel(br, project, paths, build)
         run.log_file = paths.rel(run.log_file) if run.log_file else ""
         storage.write_json(paths.result("run"), run)
         _record(tid, "run_kernel", run.status, t0, f"运行{_zh(run.status)}，{'已启动' if run.booted else '未启动'}"
