@@ -1,5 +1,6 @@
 """块 1 公共代码的边界检查：Codex 复查（2026-10-18）发现的问题各有一条回归测试。"""
 import io
+import json
 import threading
 import zipfile
 
@@ -145,6 +146,76 @@ def test_dify_deadline_without_newlines():
 
     lines = list(DifyClient(app_key="k")._lines(Two(), time.monotonic() + 5))
     assert lines == ['data: {"a"', ': 1}', 'data: {}']
+
+
+def test_preload_targets_follow_rule():
+    """预读顺序：有告警的 → 新增 → 修改；参考代码原样的告警不算；长文件只取前 400 行加告警附近。"""
+    from app.schemas import FileChange, FileEntry, Finding
+    files = {p: FileEntry(path=p, size=1, lines=n, lang=lang) for p, n, lang in [
+        ("src/a.c", 50, "c"), ("src/b.c", 900, "c"), ("src/new.c", 10, "c"), ("src/base.c", 30, "c"),
+        ("src/x.h", 20, "h"), ("README.md", 5, "markdown")]}
+    diff = DiffResult(status="passed", files=[
+        FileChange(path="src/a.c", change="modified"), FileChange(path="src/b.c", change="modified"),
+        FileChange(path="src/new.c", change="added"), FileChange(path="src/x.h", change="added"),
+        FileChange(path="README.md", change="added"), FileChange(path="src/base.c", change="same")])
+    scan = ScanResult(status="passed", mode="full", findings=[
+        Finding(evidence_id="C1", checker="c", path="src/b.c", line=700, message="m"),
+        Finding(evidence_id="C2", checker="c", path="src/base.c", line=3, message="m", in_baseline_unchanged=True)])
+    t = pipeline.preload_targets(files, diff, scan, None)
+    assert t == [("src/b.c", 1, 200), ("src/b.c", 201, 400), ("src/b.c", 680, 720),
+                 ("README.md", 1, 5), ("src/new.c", 1, 10), ("src/a.c", 1, 50)]
+    assert pipeline.preload_targets(files, diff, scan, None) == t  # 同样输入同样结果
+
+
+def test_clang_location_type_follows_rule():
+    """clang 报过的位置，模型换了类型也按映射表改回来。"""
+    from app.schemas import Finding
+    review = ReviewResult.model_validate(mocks.example("review_result"))
+    d = next(x for x in review.defects if x.path == "src/main.c")
+    d.type, d.source = "UNCHECKED_RETURN", "llm"
+    scan = ScanResult(status="passed", mode="full", findings=[
+        Finding(evidence_id="C7", checker="deadcode.DeadStores", path="src/main.c", line=d.line, message="m",
+                defect_type="UNUSED")])
+    lines = {f["path"]: f["lines"] for f in mocks.example("file_list")["files"]}
+    defects, _ = pipeline._finalize_defects(storage.new_task_id(), review, lines, DiffResult(status="unsupported"),
+                                            mocks.diff, None, None, scan)
+    got = next(x for x in defects if x.path == "src/main.c")
+    assert (got.type, got.severity, got.source) == ("UNUSED", "轻微", "clang+llm")
+
+
+def test_nudge_keeps_first_conclusions(monkeypatch):
+    """漏调知识库被提醒后，保留第一次的缺陷和功能判断，只换进新的 knowledge 讲解。"""
+    from types import SimpleNamespace
+    from app.core.dify_client import ChatResult
+    from app.schemas import AgentThought
+    tid = _new_task()
+    first = mocks.example("review_result")
+    second = json.loads(json.dumps(first))
+    second["defects"][0]["knowledge"] = "补查后的讲解"
+    second["defects"][1]["type"] = "OTHER_NORMAL"
+    second["features"][0]["status"] = "none"
+    calls: list[str] = []
+
+    class FakeDify:
+        def chat(self, text, user, conv="", deadline=None):
+            calls.append(text)
+            base = {"source": "agent", "input": {}, "status": "passed", "started_at": storage.now_iso(),
+                    "duration_ms": 0, "summary": ""}
+            if len(calls) == 1:
+                for tool in ["compile_project", "clang_scan", "read_source"]:
+                    storage.append_tool_call(tid, {**base, "tool": tool})
+                return ChatResult(answer=f"```json\n{json.dumps(first)}\n```", conversation_id="c1")
+            return ChatResult(answer=json.dumps(second), conversation_id="c1",
+                              thoughts=[AgentThought(id="t", position=1, tool="dataset_os", tool_input="信号量")])
+
+    monkeypatch.setattr(pipeline, "DifyClient", FakeDify)
+    monkeypatch.setattr(config, "is_mock", lambda m: False)
+    proj = Project.model_validate(mocks.example("ingest_result")["projects"][0])
+    review, conv, _, _ = pipeline._agent_review(SimpleNamespace(task_id=tid), TaskPaths(tid, "p1"), proj, None, [])
+    assert len(calls) == 2 and "已附源码" in calls[0]
+    assert review.defects[0].knowledge == "补查后的讲解"
+    assert review.defects[1].type == first["defects"][1]["type"]
+    assert review.features[0].status == first["features"][0]["status"]
 
 
 def test_dify_strip_think():
