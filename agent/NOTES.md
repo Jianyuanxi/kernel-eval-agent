@@ -28,3 +28,9 @@
 - 提示词加强片段模式：compile/run/clang 失败勿编造、勿死磕；无 R 证据时功能点慎标 done
 - 多样例复核（全真实模式）：样例1 `t2026102915235927c023` 仍检出 shmsg.c:96 OUT_OF_BOUNDS；样例4 / 2-lab10 / 2-lab6_pro / 样例3 均 done，工具与 knowledge 齐全，warnings 空
 - 模型对比（选做）未做，继续用 deepseek/deepseek-flash
+
+## 阶段 3
+
+- 后端 `#13` 起评审阶段 `read_source` 成功上限 20（`READ_LIMIT`）；提示词改为优先读 clang 告警与 diff 改动文件，收到 READ_LIMIT 直接出 JSON
+- `defects` 上限 30→20，缩短报告
+- 块 4 植入缺陷 S8 已 7/10 通过；提示词补充 DEADLOCK / IRQ_NOT_RESTORED 类型要写准（针对 A05/A08/A09 漏检的通用指引，不写具体补丁位置）
