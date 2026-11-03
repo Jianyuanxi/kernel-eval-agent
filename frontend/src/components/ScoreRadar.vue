@@ -16,7 +16,13 @@ function option() {
     radar: {
       indicator: items.map((item) => ({ name: item.name, max: 100 })),
       radius: '62%',
+      axisName: { color: '#56636f', fontSize: 12 },
+      splitLine: { lineStyle: { color: '#cfd7df' } },
+      splitArea: { show: false },
+      axisLine: { lineStyle: { color: '#cfd7df' } },
     },
+    animationDuration: 900,
+    animationEasing: 'cubicOut',
     series: [
       {
         type: 'radar',
@@ -24,9 +30,9 @@ function option() {
           {
             name: '得分率',
             value: items.map((item) => Math.round((item.score / item.max) * 1000) / 10),
-            areaStyle: { color: 'rgba(31, 111, 100, 0.2)' },
-            lineStyle: { color: '#1f6f64' },
-            itemStyle: { color: '#1f6f64' },
+            areaStyle: { color: 'rgba(40, 71, 216, 0.18)' },
+            lineStyle: { color: '#2847d8', width: 2 },
+            itemStyle: { color: '#2847d8' },
           },
         ],
       },

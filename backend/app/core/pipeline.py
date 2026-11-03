@@ -103,6 +103,27 @@ def _evaluate(info: TaskInfo, paths: TaskPaths, project: Project) -> Report:
     paths.logs.mkdir(parents=True, exist_ok=True)
     full = project.buildable
 
+    def do_scan() -> tuple[ScanResult, float]:
+        """跑 clang 扫描，返回结果和实际用时（秒）"""
+        t0 = time.monotonic()
+        try:
+            res = _call(an.scan, project, paths.project, paths.work_scan, paths.logs)
+        except SandboxError as e:
+            res = ScanResult(status="error", mode="full" if full else "fragment",
+                             error=ErrorInfo(code="SANDBOX_ERROR", message=str(e)))
+        return res, time.monotonic() - t0
+
+    # clang 扫描不依赖编译运行结果，和 QEMU 那 20 秒并行跑（服务器 4 核，两个沙箱各限 2 核），省掉约 8 秒
+    scan_box: dict = {}
+    scan_thread = None
+    if full:
+        def scan_bg() -> None:
+            try:
+                scan_box["result"] = do_scan()
+            except BaseException as e:  # 留到主线程再抛，保持原来的失败处理
+                scan_box["error"] = e
+        scan_thread = threading.Thread(target=scan_bg, daemon=True, name=f"scan-{tid}")
+
     build: BuildResult | None = None
     run: RunResult | None = None
     if full:
@@ -116,7 +137,8 @@ def _evaluate(info: TaskInfo, paths: TaskPaths, project: Project) -> Report:
         storage.write_json(paths.result("build"), build)
         _record(tid, "compile_project", build.status, t0, f"编译{_zh(build.status)}，{build.warnings} 条警告，{build.errors} 个错误")
 
-        _set(info, "running", "正在 QEMU 中运行内核")
+        _set(info, "running", "正在 QEMU 中运行内核，同时做 clang 静态分析")
+        scan_thread.start()
         t0 = time.monotonic()
         run = _run_kernel(br, project, paths, build)
         if run.status == "failed" and run.booted:  # 启动了但没进 shell：学生内核有竞争时偶发，重跑一次用新结果
@@ -127,12 +149,14 @@ def _evaluate(info: TaskInfo, paths: TaskPaths, project: Project) -> Report:
                 + (f"，识别到提示符 {run.shell_prompt!r}" if run.shell_prompt else ""))
 
     _set(info, "scanning", "正在用 clang 静态分析")
-    t0 = time.monotonic()
-    try:
-        scan: ScanResult = _call(an.scan, project, paths.project, paths.work_scan, paths.logs)
-    except SandboxError as e:
-        scan = ScanResult(status="error", mode="full" if full else "fragment",
-                          error=ErrorInfo(code="SANDBOX_ERROR", message=str(e)))
+    if scan_thread is not None:
+        scan_thread.join()
+        if "error" in scan_box:
+            raise scan_box["error"]
+        scan, took = scan_box["result"]
+    else:
+        scan, took = do_scan()
+    t0 = time.monotonic() - took  # 记录扫描自己的用时，不算等 QEMU 的时间
     _record(tid, "clang_scan", scan.status, t0,
             f"扫描 {scan.files_scanned}/{scan.files_total} 个文件，{scan.findings_total} 条告警")
 
