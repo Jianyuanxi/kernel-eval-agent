@@ -30,19 +30,38 @@ const showProgress = computed(() =>
     || stage.value === 'failed',
 )
 const showReport = computed(() => stage.value === 'done')
+const stageIndex = computed(() => STAGES.findIndex((s) => s.key === stage.value))
+/** 进度条蓝线长度：走到第几站就铺到第几站（6 站之间 5 段，左右各留半格）。 */
+const fillWidth = computed(() => `${(Math.max(0, stageIndex.value) / 5) * 83.34}%`)
+
+/** 失败时停在最后一个有记录的阶段，标红。 */
+const failedAt = ref(-1)
 
 function stageClass(key) {
-  const current = stage.value
-  const order = STAGES.map((s) => s.key)
-  if (current === 'failed') return 'failed'
-  if (current === 'done') return 'done'
-  const ci = order.indexOf(current)
-  const ki = order.indexOf(key)
+  const ki = STAGES.findIndex((s) => s.key === key)
+  if (stage.value === 'failed') return ki < failedAt.value ? 'done' : ki === failedAt.value ? 'failed' : ''
+  if (stage.value === 'done') return 'done'
+  const ci = stageIndex.value
   if (ci < 0) return ''
   if (ki < ci) return 'done'
   if (ki === ci) return 'current'
   return ''
 }
+
+const now = ref(Date.now())
+let ticker = null
+const elapsed = computed(() => {
+  const start = Date.parse(events.value[0]?.started_at || task.value?.created_at || '')
+  if (!start) return '0:00'
+  const s = Math.max(0, Math.floor((now.value - start) / 1000))
+  return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`
+})
+onMounted(() => {
+  ticker = setInterval(() => {
+    if (showProgress.value && stage.value !== 'failed') now.value = Date.now()
+  }, 1000)
+})
+onUnmounted(() => clearInterval(ticker))
 
 /** 只接收当前页面这轮加载的响应。 */
 function isCurrent(version) {
@@ -76,6 +95,7 @@ async function poll(version) {
       const seen = new Set(events.value.map((event) => event.seq))
       events.value = events.value.concat(data.tool_calls.filter((event) => !seen.has(event.seq)))
     }
+    if (data.stage === 'failed') failedAt.value = stageIndex.value
     task.value.stage = data.stage
     task.value.progress = data.progress
     if (data.stage === 'done') {
@@ -132,12 +152,10 @@ watch(() => props.id, bootstrap)
 </script>
 
 <template>
-  <section v-if="task && !showReport" class="card">
-    <p class="hint">任务 {{ task.task_id }} · {{ task.upload_name }}</p>
-
+  <section v-if="task && !showReport">
     <template v-if="showSelect">
       <h1>选择要评测的工程</h1>
-      <p class="lead">识别出 {{ task.projects.length }} 个工程。只有一个时会自动开始。</p>
+      <p class="lead">{{ task.upload_name }} 里识别出 {{ task.projects.length }} 个工程，选一个开始评测。</p>
       <div class="project-grid">
         <article v-for="p in task.projects" :key="p.project_id" class="project">
           <div>
@@ -156,18 +174,25 @@ watch(() => props.id, bootstrap)
     </template>
 
     <template v-if="showProgress">
-      <h1>{{ stage === 'failed' ? '评测失败' : '评测进行中' }}</h1>
-      <p class="lead">{{ task.progress || '正在准备…' }}</p>
-      <div class="stages">
-        <span v-for="s in STAGES" :key="s.key" class="stage" :class="stageClass(s.key)">{{ s.label }}</span>
+      <div class="run-head">
+        <h1>{{ stage === 'failed' ? '评测没有完成' : `正在评测 ${task.upload_name}` }}</h1>
+        <span v-if="stage !== 'failed'" class="clock">{{ elapsed }}</span>
+        <span v-if="stage !== 'failed'" class="hint">通常需要 2–4 分钟，可以离开这个页面，回来还能看到进度</span>
       </div>
-      <h2>工具调用时间线</h2>
-      <ToolTimeline :events="events" />
+      <div class="pipe">
+        <div class="fill" :style="{ width: fillWidth }" />
+        <div v-for="(s, i) in STAGES" :key="s.key" class="station" :class="stageClass(s.key)">
+          <div class="node">{{ i + 1 }}</div>
+          <div class="lbl">{{ s.label }}</div>
+        </div>
+      </div>
       <div v-if="task.error" class="error">{{ formatError(task.error) }}</div>
+      <ToolTimeline :events="events" :live="stage !== 'failed'" :waiting="task.progress || '正在准备'" />
+      <p class="run-foot">蓝色是后端流水线自动做的，黄色是智能体自己决定调用的工具。智能体评审通常要 2–3 分钟，期间会陆续出现它读源码、查知识库的记录。</p>
     </template>
 
   </section>
-  <section v-if="showReport && !report" class="card">
+  <section v-if="showReport && !report">
     <h1>{{ error ? '报告加载失败' : '正在加载报告…' }}</h1>
     <p class="lead"><span v-if="!error" class="spinner" aria-hidden="true" /> {{ error ? '正在自动重试，请稍候。' : '请稍候，正在读取评分结果。' }}</p>
   </section>
